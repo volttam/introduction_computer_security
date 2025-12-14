@@ -11,7 +11,7 @@ class PasswordSHA256Hash:
 
 class PasswordSHA256Hasher:
     """
-    Password hashing using SHA-256 with per-password salt.
+    Password hasher using SHA-256 with per-password salt
     """
     SALT_BYTES = 16  # 128-bit salt
 
