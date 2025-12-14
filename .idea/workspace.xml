@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="adding db manager class">
-      <change afterPath="$PROJECT_DIR$/logger.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/users.py" afterDir="false" />
+    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="added context logger and user model and context">
+      <change afterPath="$PROJECT_DIR$/hashing/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hashing/sha256_hashing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/context.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +58,11 @@
     "git-widget-placeholder": "add__db"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Tamir\introduction_computer_security\hashing" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -91,12 +94,21 @@
       <option name="project" value="LOCAL" />
       <updated>1765723850884</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added context logger and user model and context">
+      <option name="closed" value="true" />
+      <created>1765729339688</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765729339688</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="starting project" />
     <MESSAGE value="adding db manager class" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding db manager class" />
+    <MESSAGE value="added context logger and user model and context" />
+    <option name="LAST_COMMIT_MESSAGE" value="added context logger and user model and context" />
   </component>
 </project>
