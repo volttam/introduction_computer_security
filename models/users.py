@@ -21,3 +21,9 @@ class User(SQLModel, table=True):
     sha_256_salt_password_hash: str = Field(
         nullable=False
     )
+    bcrypt_password_hash: str = Field(
+        nullable=False
+    )
+    argon2id_password_hash: str = Field(
+        nullable=False
+    )
