@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="fix">
-      <change afterPath="$PROJECT_DIR$/hashing/argon_hashing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hashing/bcrypt_hashing.py" afterDir="false" />
+    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="added fields to users">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hashing/argon_hashing.py" beforeDir="false" afterPath="$PROJECT_DIR$/hashing/argon_hashing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +119,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765730207707</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="added argon and bcrypt hashing">
+      <option name="closed" value="true" />
+      <created>1765809372760</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765809372760</updated>
+    </task>
+    <task id="LOCAL-00007" summary="added fields to users">
+      <option name="closed" value="true" />
+      <created>1765809519245</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765809519245</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -130,6 +144,8 @@
     <MESSAGE value="added context logger and user model and context" />
     <MESSAGE value="added sha256 password hasher" />
     <MESSAGE value="fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix" />
+    <MESSAGE value="added argon and bcrypt hashing" />
+    <MESSAGE value="added fields to users" />
+    <option name="LAST_COMMIT_MESSAGE" value="added fields to users" />
   </component>
 </project>

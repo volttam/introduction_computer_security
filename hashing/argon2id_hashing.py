@@ -6,11 +6,6 @@ from argon2 import Type
 class PasswordArgon2idHasher:
     """
     Password hashing using Argon2id.
-
-    Parameters:
-    - time_cost = 1
-    - memory_cost = 64 MB
-    - parallelism = 1
     """
 
     _hasher = _Argon2Hasher(
@@ -24,7 +19,6 @@ class PasswordArgon2idHasher:
 
     @staticmethod
     def hash_password(password: str) -> str:
-        if not password:
+        if len(password) < 1:
             raise ValueError("Password must not be empty")
-
-        return PasswordHasher._hasher.hash(password)
+        return PasswordArgon2idHasher._hasher.hash(password)
