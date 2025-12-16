@@ -1,9 +1,10 @@
 from argon2 import PasswordHasher as _Argon2Hasher
 from argon2.exceptions import VerifyMismatchError
 from argon2 import Type
+from hashing.password_hasher import PasswordHasher
 
 
-class PasswordArgon2idHasher:
+class PasswordArgon2idHasher(PasswordHasher):
     """
     Password hashing using Argon2id.
     """
@@ -22,3 +23,13 @@ class PasswordArgon2idHasher:
         if len(password) < 1:
             raise ValueError("Password must not be empty")
         return PasswordArgon2idHasher._hasher.hash(password)
+
+    @staticmethod
+    def verify_password(password: str, stored_hash: str) -> bool:
+        if not stored_hash:
+            return False
+        try:
+            PasswordArgon2idHasher._hasher.verify(stored_hash, password)
+        except VerifyMismatchError:
+            return False
+        return True

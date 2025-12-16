@@ -1,6 +1,7 @@
 import hashlib
 import secrets
 from dataclasses import dataclass
+from hashing.password_hasher import PasswordHasher
 
 
 @dataclass(frozen=True)
@@ -9,7 +10,7 @@ class PasswordSHA256Hash:
     salt: str
 
 
-class PasswordSHA256Hasher:
+class PasswordSHA256Hasher(PasswordHasher):
     """
     Password hasher using SHA-256 with per-password salt
     """
@@ -27,3 +28,10 @@ class PasswordSHA256Hasher:
     def _sha256(password: str, salt: str) -> str:
         password_and_salt = f"{salt}{password}".encode("utf-8")
         return hashlib.sha256(password_and_salt).hexdigest()
+
+    @staticmethod
+    def verify_password(password: str, stored_hash: str, salt: str) -> bool:
+        if not stored_hash or not salt:
+            return False
+        calculated = PasswordSHA256Hasher._sha256(password, salt)
+        return secrets.compare_digest(calculated, stored_hash)

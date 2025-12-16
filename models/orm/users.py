@@ -19,11 +19,11 @@ class User(SQLModel, table=True):
         max_length=255,
     )
     sha_256_salt_password_hash: str = Field(
-        nullable=False
+        nullable=True
     )
     bcrypt_password_hash: str = Field(
-        nullable=False
+        nullable=True
     )
     argon2id_password_hash: str = Field(
-        nullable=False
+        nullable=True
     )
