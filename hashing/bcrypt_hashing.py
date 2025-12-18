@@ -24,15 +24,15 @@ class PasswordBcryptHasher(PasswordHasher):
         return hashed.decode("utf-8")
 
     @staticmethod
-    def verify_password(password: str, stored_hash: str) -> bool:
+    def verify_password(input_password: str, stored_hash: str) -> bool:
         """
         Verifying password using bcrypt.
-        :param password: Hashed password
+        :param input_password: Hashed password
         :param stored_hash: Stored hash
         :return: if password matches stored hash.
         """
         logger.debug(f"Verifying password using bcrypt hash")
         if not stored_hash:
             return False
-        password_bytes = password.encode("utf-8")
+        password_bytes = input_password.encode("utf-8")
         return bcrypt.checkpw(password_bytes, stored_hash.encode("utf-8"))

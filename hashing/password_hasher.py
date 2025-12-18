@@ -16,7 +16,7 @@ class PasswordHasher(ABC):
 
     @staticmethod
     @abstractmethod
-    def verify_password(*args, **kwargs) -> bool:
+    def verify_password(input_password: str, stored_hash: str) -> bool:
         """
         Verify a plaintext password against a stored hash.
         """

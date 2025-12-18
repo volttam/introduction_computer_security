@@ -32,10 +32,10 @@ class PasswordArgon2idHasher(PasswordHasher):
         return PasswordArgon2idHasher._hasher.hash(password)
 
     @staticmethod
-    def verify_password(password: str, stored_hash: str) -> bool:
+    def verify_password(input_password: str, stored_hash: str) -> bool:
         """
         Verify password against stored hash.
-        :param password: Hashed password.
+        :param input_password: Hashed password.
         :param stored_hash: stored hash.
         :return: if password matches stored hash.
         """

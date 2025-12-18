@@ -43,16 +43,19 @@ class PasswordSHA256Hasher(PasswordHasher):
         return hashlib.sha256(password_and_salt).hexdigest()
 
     @staticmethod
-    def verify_password(password: str, stored_hash: str, salt: str) -> bool:
+    def verify_password(input_password: str, stored_hash: str) -> bool:
         """
-        Verify password hash by sha256
-        :param password: Password string
-        :param stored_hash: stored hash
-        :param salt: salt string
-        :return: if password hash matches stored hash
+        Verify plaintext password against stored SHA256+salt hash.
+        :param input_password: Plaintext password entered by user
+        :param stored_hash: Stored value in format "salt$hash"
+        :return: True if password matches, False otherwise
         """
-        logger.debug("Verify password hash")
-        if not stored_hash or not salt:
+        logger.debug("Verifying SHA256+salt password")
+        if not input_password or not stored_hash:
             return False
-        calculated = PasswordSHA256Hasher._sha256(password, salt)
-        return secrets.compare_digest(calculated, stored_hash)
+        try:
+            salt, stored_hash = stored_hash.split("$", 1)
+        except ValueError:
+            return False
+        computed_hash = PasswordSHA256Hasher._sha256(input_password, salt)
+        return secrets.compare_digest(computed_hash, stored_hash)
