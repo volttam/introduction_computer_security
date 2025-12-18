@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from logger import get_logger
 
 class PasswordHasher(ABC):
     """
@@ -15,7 +16,7 @@ class PasswordHasher(ABC):
 
     @staticmethod
     @abstractmethod
-    def verify_password(password: str, stored_hash: str) -> bool:
+    def verify_password(*args, **kwargs) -> bool:
         """
         Verify a plaintext password against a stored hash.
         """

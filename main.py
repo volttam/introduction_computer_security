@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 from models.orm.users import User
 from db_manager import DBManager
 from context import Context
+from logger import logger
 
 
 app = FastAPI()

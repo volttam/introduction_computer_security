@@ -1,5 +1,6 @@
 import bcrypt
 from hashing.password_hasher import PasswordHasher
+from logger import logger
 
 class PasswordBcryptHasher(PasswordHasher):
     """
@@ -9,6 +10,12 @@ class PasswordBcryptHasher(PasswordHasher):
 
     @staticmethod
     def hash_password(password: str) -> str:
+        """
+        Hahsing password using bcrypt.
+        :param password: plain text password
+        :return: bcrypt hashed password
+        """
+        logger.debug(f"Hashing bcrypt password")
         if len(password) < 1:
             raise ValueError("Password must be not empty")
         password_bytes = password.encode("utf-8")
@@ -18,6 +25,13 @@ class PasswordBcryptHasher(PasswordHasher):
 
     @staticmethod
     def verify_password(password: str, stored_hash: str) -> bool:
+        """
+        Verifying password using bcrypt.
+        :param password: Hashed password
+        :param stored_hash: Stored hash
+        :return: if password matches stored hash.
+        """
+        logger.debug(f"Verifying password using bcrypt hash")
         if not stored_hash:
             return False
         password_bytes = password.encode("utf-8")

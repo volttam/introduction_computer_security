@@ -4,6 +4,7 @@ from typing import Generator, Optional
 
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy.engine import Engine
+from logger import get_logger
 
 
 class DBManager:

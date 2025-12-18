@@ -1,16 +1,13 @@
-from pycparser.c_ast import Union
 
 from hashing.argon2id_hashing import PasswordArgon2idHasher
 from hashing.bcrypt_hashing import PasswordBcryptHasher
 from hashing.sha256_hashing import PasswordSHA256Hasher
 from hashing.password_hasher import PasswordHasher
-from context import Context
+from logger import logger
 
 class PasswordHasherSelector:
 
-
     def __init__(self):
-        self.ctx = Context()
         self.sha256_hasher = PasswordSHA256Hasher()
         self.bcrypt_hasher = PasswordBcryptHasher()
         self.argon2id_hasher = PasswordArgon2idHasher()
@@ -26,7 +23,7 @@ class PasswordHasherSelector:
         :param hashing_mechanism: Hashing mechanism.
         :return: PasswordHasher
         """
-        self.ctx.logger.debug(f"Getting password hasher of {hashing_mechanism}")
+        logger.debug(f"Getting password hasher of {hashing_mechanism}")
         try:
             return self._HASHER_MAP[hashing_mechanism]
         except KeyError:
