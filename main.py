@@ -25,7 +25,8 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hashing_mechanism).verify_password():
+    stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hashing_mechanism)
+    if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hashing_mechanism).verify_password(payload.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     return {"message": "Login successful"}
