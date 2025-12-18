@@ -43,7 +43,7 @@ class PasswordArgon2idHasher(PasswordHasher):
         if not stored_hash:
             return False
         try:
-            PasswordArgon2idHasher._hasher.verify(stored_hash, password)
+            PasswordArgon2idHasher._hasher.verify(stored_hash, input_password)
         except VerifyMismatchError:
             return False
         return True
