@@ -11,6 +11,7 @@ class Settings(BaseSettings):
         default="sha256",
         alias="HASHING_MECHANISM",
     )
+    group_seed = "0x039C76D"
 
     class Config:
         env_file = BASE_DIR / "config" / ".env"

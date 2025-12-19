@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from logger import get_logger
+
 
 class PasswordHasher(ABC):
     """

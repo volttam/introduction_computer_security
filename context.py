@@ -10,4 +10,5 @@ class Context:
         self.settings = Settings()
         self.password_hasher_selector = PasswordHasherSelector()
         self.user_handler = UserHandler()
+ctx = Context()
 

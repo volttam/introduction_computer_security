@@ -2,7 +2,7 @@ from argon2 import PasswordHasher as _Argon2Hasher
 from argon2.exceptions import VerifyMismatchError
 from argon2 import Type
 from hashing.password_hasher import PasswordHasher
-from logger import logger
+from logging.logger import logger
 
 
 class PasswordArgon2idHasher(PasswordHasher):

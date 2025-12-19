@@ -1,6 +1,6 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
-from logger import logger
+
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
