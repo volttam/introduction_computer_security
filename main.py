@@ -20,7 +20,7 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     if not user:
         log_login_attempt(username=user.username, result="User not found", latency_ms=(time.perf_counter() - start_time) * 1000)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hashing_mechanism)
+    stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hashing_mechanism).verify_password(payload.password, stored_hash):
         log_login_attempt(username=user.username, result="Invalid credentials", latency_ms=(time.perf_counter() - start_time) * 1000)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")

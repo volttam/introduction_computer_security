@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # project root
 class Settings(BaseSettings):
     hash_mode: Literal["argon2id", "bcrypt", "sha256"] = Field(
         default="sha256",
-        alias="HASHING_MECHANISM",
+        alias="HASH_MODE",
     )
     seed_group: str = Field(default="0x039C76D")
 
