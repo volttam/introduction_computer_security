@@ -24,6 +24,7 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
         log_login_attempt(username=user.username, result="Invalid credentials", latency_ms=(time.perf_counter() - start_time) * 1000)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    log_login_attempt(username=user.username, result="Login successful",latency_ms=(time.perf_counter() - start_time) * 1000)
     return {"message": "Login successful"}
 
 @app.post("/register", status_code=status.HTTP_201_CREATED)
@@ -31,7 +32,6 @@ def register_user(
     payload: RegisterRequest,
     session: Session = Depends(ctx.db_manager.get_session),
 ):
-    # 1️⃣ Check username or email already exists
     existing_user = session.exec(
         select(User).where(
             (User.username == payload.username)
