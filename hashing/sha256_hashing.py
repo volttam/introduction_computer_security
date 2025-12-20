@@ -2,7 +2,7 @@ import hashlib
 import secrets
 from dataclasses import dataclass
 from hashing.password_hasher import PasswordHasher
-from logging.logger import logger
+from loggers.logger import logger
 
 @dataclass(frozen=True)
 class PasswordSHA256Hash:

@@ -4,17 +4,12 @@ from models.api_requests.api_requests import LoginRequest, RegisterRequest
 from sqlmodel import Session, select
 from models.orm.users import User
 from context import Context, ctx
-from logging.logger import logger
+from loggers.logger import logger
 import time
-from logging.attempts_logger import attempts_logger, log_login_attempt
+from loggers.attempts_logger import log_login_attempt
 
 
 app = FastAPI()
-
-
-@app.get("/")
-def home():
-    return {"message": "FastAPI project running!"}
 
 
 @app.post("/login")

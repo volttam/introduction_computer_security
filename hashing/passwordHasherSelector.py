@@ -3,7 +3,7 @@ from hashing.argon2id_hashing import PasswordArgon2idHasher
 from hashing.bcrypt_hashing import PasswordBcryptHasher
 from hashing.sha256_hashing import PasswordSHA256Hasher
 from hashing.password_hasher import PasswordHasher
-from logging.logger import logger
+from loggers.logger import logger
 
 class PasswordHasherSelector:
 

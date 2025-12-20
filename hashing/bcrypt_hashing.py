@@ -1,6 +1,6 @@
 import bcrypt
 from hashing.password_hasher import PasswordHasher
-from logging.logger import logger
+from loggers.logger import logger
 
 class PasswordBcryptHasher(PasswordHasher):
     """
