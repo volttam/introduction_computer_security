@@ -11,6 +11,10 @@ from loggers.attempts_logger import log_login_attempt
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Hello World"}
+
 
 @app.post("/login")
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
