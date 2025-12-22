@@ -1,42 +1,30 @@
 import logging
-import time
-import json
+from logging import Logger
 
 
+def get_logger(name: str) -> Logger:
+    """
+    Create or retrieve a configured logger.
+    """
 
-logger = logging.getLogger("login_attempts")
-logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler("login_attempts.log")
-formatter = logging.Formatter('%(asctime)s - %(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+    logger = logging.getLogger(name)
 
-attempts_logger = logging.getLogger("attempts")
-attempts_logger.setLevel(logging.INFO)
-attempts_logger.addHandler(file_handler)
+    # Prevent duplicate handlers if called multiple times
+    if logger.handlers:
+        return logger
 
+    logger.setLevel(logging.INFO)
 
+    handler = logging.StreamHandler()
 
-def log_login_attempt(
-        username: str,
-        result: str | int,
-        latency_ms: float,
-        seed_group: str,
-        timestamp: float = time.time(),
-        hash_mode: str = "bcrypt",
-        protection_flags: list[str] = None,
-):
+    formatter = logging.Formatter(
+        fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
-    log_entry = {
-        "timestamp": timestamp,
-        "seed_group": seed_group,
-        "username": username,
-        "hash_mode": hash_mode,
-        "protection_flags": protection_flags,
-        "result": result,
-        "latency_ms": latency_ms,
-    }
-    logger.info(f"logging {json.dumps(log_entry)}")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
 
-    attempts_logger.info(json.dumps(log_entry))
+    return logger
 
+logger = get_logger(__name__)
