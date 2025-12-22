@@ -33,7 +33,7 @@ class ApiClientService:
             logger.error(f"Request failed: {exc}")
             raise
         latency_ms = (time.perf_counter() - start_time) * 1000
-        log_login_attempt(username=username, result=response.status_code, latency_ms=(time.perf_counter() - start_time) * 1000, seed_group=ctx.settings.seed_group, hash_mode=ctx.settings.hash_mode)
+        log_login_attempt(username=username, result=f"{response.status_code} {response.json()}", latency_ms=(time.perf_counter() - start_time) * 1000, seed_group=ctx.settings.seed_group, hash_mode=ctx.settings.hash_mode)
         return {
             "status_code": response.status_code,
             "content": response.json() if response.content else None,
