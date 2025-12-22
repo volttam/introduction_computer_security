@@ -1,7 +1,7 @@
 import logging
 import json
 import time
-from context import ctx
+from loggers.logger import logger
 
 attempts_logger = logging.getLogger("auth_attempts")
 attempts_logger.setLevel(logging.INFO)
@@ -15,11 +15,11 @@ attempts_logger.propagate = False
 def log_login_attempt(
     *,
     timestamp: float = time.time(),
-    seed_group: int = ctx.settings.seed_group,
+    seed_group: int,
     username: str,
-    hash_mode: str = ctx.settings.hash_mode,
+    hash_mode: str,
     protection_flags: list[str] = None,
-    result: str,
+    result: str | int,
     latency_ms: float,
 ):
     log_entry = {
@@ -31,5 +31,5 @@ def log_login_attempt(
         "result": result,
         "latency_ms": latency_ms,
     }
-
+    logger.info(f"logging attempt {log_entry}")
     attempts_logger.info(json.dumps(log_entry))

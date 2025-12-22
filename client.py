@@ -2,7 +2,6 @@ import httpx
 import time
 from loggers.logger import logger
 from loggers.attempts_logger import log_login_attempt
-import json
 from context import ctx
 
 class ApiClientService:
