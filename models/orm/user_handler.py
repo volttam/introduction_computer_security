@@ -1,7 +1,12 @@
+from db_manager import DBManager
 from models.orm.users import User
+from sqlmodel import select
 
 
 class UserHandler:
+
+    def __init__(self):
+        self.db_manager = DBManager()
 
     @staticmethod
     def get_stored_password_hash(user: User, hashing_mechanism: str) -> str:
@@ -19,3 +24,18 @@ class UserHandler:
             raise ValueError(
                 f"Unsupported hashing mechanism: {hashing_mechanism}"
             )
+
+    def get_all_users(self) -> list[User]:
+        """
+        Return a list of all users stored in the database
+        :return:
+        """
+        session = self.db_manager.get_session()
+        query = select(User)
+        results = session.exec(query)
+        users = []
+        for user in results:
+            users.append(user)
+        return users
+
+

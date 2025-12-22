@@ -7,6 +7,7 @@ class FileManager:
 
     BASE_DIR = Path(__file__).resolve().parent.parent
     BRUTE_FORCE_PASSWORDS_FILE_PATH = (BASE_DIR / "attempted_passwords" / "brute_force_passwords.txt")
+    PASSWORD_SPRAYING_PASSWORDS_FILE_PATH = (BASE_DIR / "attempted_passwords" / "password_spraying_passwords.txt")
 
     def __init__(self):
         logger.info(f"Initializing file manager")
@@ -30,3 +31,7 @@ class FileManager:
     @property
     def get_brute_force_passwords(self) -> list[str]:
         return self.__save_text_file_to_list(self.BRUTE_FORCE_PASSWORDS_FILE_PATH)
+
+    @property
+    def get_password_spraying_passwords(self) -> list[str]:
+        return self.__save_text_file_to_list(self.PASSWORD_SPRAYING_PASSWORDS_FILE_PATH, delimiter="\n")

@@ -29,9 +29,11 @@ class DBManager:
             SQLModel.metadata.create_all(self.engine)
             self._initialized = True
 
-    def get_session(self) -> Generator[Session, None, None]:
+    def get_session(self) -> Session:
         """
-        Get db session
+        Get db session directly.
         """
-        with Session(self.engine) as session:
-            yield session
+        session = Session(self.engine)
+        return session
+
+
