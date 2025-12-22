@@ -23,7 +23,7 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    return {"detail": "Login successful"}
+    return {"message": "Login successful"}
 
 @app.post("/register", status_code=status.HTTP_201_CREATED)
 def register_user(
