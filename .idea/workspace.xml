@@ -4,16 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="added argon2id_hashing">
-      <change afterPath="$PROJECT_DIR$/models/api_requests/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/api_requests/api_requests.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/orm/__init__.py" afterDir="false" />
+    <list default="true" id="ef8a1ee3-a92a-42f2-82a9-376dc78779f9" name="Changes" comment="added file manager">
+      <change afterPath="$PROJECT_DIR$/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hashing/argon2id_hashing.py" beforeDir="false" afterPath="$PROJECT_DIR$/hashing/argon2id_hashing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hashing/bcrypt_hashing.py" beforeDir="false" afterPath="$PROJECT_DIR$/hashing/bcrypt_hashing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hashing/sha256_hashing.py" beforeDir="false" afterPath="$PROJECT_DIR$/hashing/sha256_hashing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/attacks/brute_force.py" beforeDir="false" afterPath="$PROJECT_DIR$/attacks/brute_force.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/context.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/file_managers/file_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/file_managers/file_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loggers/attempts_logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/loggers/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/loggers/logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/orm/users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +57,15 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests for tests.test_login_weak_user_success.executor": "Run",
+    "Python tests.Python tests for tests.test_login_weak_user_wrong_password.executor": "Run",
+    "Python tests.Python tests for tests.test_register_user_success.executor": "Run",
+    "Python tests.Python tests in tests.py.executor": "Run",
+    "Python.brute_force.executor": "Run",
+    "Python.extract_text.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.settings.executor": "Run",
+    "Python.tests.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -67,9 +74,111 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Tamir\introduction_computer_security\logging" />
+      <recent name="C:\Users\Tamir\introduction_computer_security\config" />
       <recent name="C:\Users\Tamir\introduction_computer_security\models" />
       <recent name="C:\Users\Tamir\introduction_computer_security\hashing" />
     </key>
+  </component>
+  <component name="RunManager" selected="Python.brute_force">
+    <configuration name="brute_force" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="introduction_computer_security" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/attacks" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/attacks/brute_force.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="extract_text" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="introduction_computer_security" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/extract_text.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_login_weak_user_success" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="introduction_computer_security" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_login_weak_user_success&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_login_weak_user_wrong_password" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="introduction_computer_security" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_login_weak_user_wrong_password&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for tests.test_register_user_success" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="introduction_computer_security" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;tests.test_register_user_success&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.brute_force" />
+        <item itemvalue="Python.extract_text" />
+        <item itemvalue="Python tests.Python tests for tests.test_login_weak_user_wrong_password" />
+        <item itemvalue="Python tests.Python tests for tests.test_login_weak_user_success" />
+        <item itemvalue="Python tests.Python tests for tests.test_register_user_success" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -150,7 +259,127 @@
       <option name="project" value="LOCAL" />
       <updated>1765897935767</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added abstract class">
+      <option name="closed" value="true" />
+      <created>1765902001997</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1765902001997</updated>
+    </task>
+    <task id="LOCAL-00010" summary="added password hasher selector">
+      <option name="closed" value="true" />
+      <created>1766047412612</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1766047412612</updated>
+    </task>
+    <task id="LOCAL-00011" summary="added logging">
+      <option name="closed" value="true" />
+      <created>1766048981319</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1766048981319</updated>
+    </task>
+    <task id="LOCAL-00012" summary="added settings">
+      <option name="closed" value="true" />
+      <created>1766049663181</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1766049663181</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fixing password hashing">
+      <option name="closed" value="true" />
+      <created>1766051510211</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1766051510211</updated>
+    </task>
+    <task id="LOCAL-00014" summary="added user handle">
+      <option name="closed" value="true" />
+      <created>1766052354317</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1766052354324</updated>
+    </task>
+    <task id="LOCAL-00015" summary="added tests">
+      <option name="closed" value="true" />
+      <created>1766065179289</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1766065179289</updated>
+    </task>
+    <task id="LOCAL-00016" summary="added registre endpoint">
+      <option name="closed" value="true" />
+      <created>1766066249587</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1766066249587</updated>
+    </task>
+    <task id="LOCAL-00017" summary="added attempts logger">
+      <option name="closed" value="true" />
+      <created>1766169227607</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1766169227607</updated>
+    </task>
+    <task id="LOCAL-00018" summary="fixed logger">
+      <option name="closed" value="true" />
+      <created>1766221587784</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1766221587784</updated>
+    </task>
+    <task id="LOCAL-00019" summary="fixed hash mode">
+      <option name="closed" value="true" />
+      <created>1766222021857</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1766222021857</updated>
+    </task>
+    <task id="LOCAL-00020" summary="fixed hash mode main">
+      <option name="closed" value="true" />
+      <created>1766222312119</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1766222312119</updated>
+    </task>
+    <task id="LOCAL-00021" summary="fixed hash mode main seed group is: 0x039C76D">
+      <option name="closed" value="true" />
+      <created>1766222508610</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1766222508610</updated>
+    </task>
+    <task id="LOCAL-00022" summary="deleting comment">
+      <option name="closed" value="true" />
+      <created>1766227180960</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1766227180960</updated>
+    </task>
+    <task id="LOCAL-00023" summary="added file manager">
+      <option name="closed" value="true" />
+      <created>1766229384877</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1766229384877</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -162,6 +391,21 @@
     <MESSAGE value="added argon and bcrypt hashing" />
     <MESSAGE value="added fields to users" />
     <MESSAGE value="added argon2id_hashing" />
-    <option name="LAST_COMMIT_MESSAGE" value="added argon2id_hashing" />
+    <MESSAGE value="added abstract class" />
+    <MESSAGE value="added password hasher selector" />
+    <MESSAGE value="added logging" />
+    <MESSAGE value="added settings" />
+    <MESSAGE value="fixing password hashing" />
+    <MESSAGE value="added user handle" />
+    <MESSAGE value="added tests" />
+    <MESSAGE value="added registre endpoint" />
+    <MESSAGE value="added attempts logger" />
+    <MESSAGE value="fixed logger" />
+    <MESSAGE value="fixed hash mode" />
+    <MESSAGE value="fixed hash mode main" />
+    <MESSAGE value="fixed hash mode main seed group is: 0x039C76D" />
+    <MESSAGE value="deleting comment" />
+    <MESSAGE value="added file manager" />
+    <option name="LAST_COMMIT_MESSAGE" value="added file manager" />
   </component>
 </project>

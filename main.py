@@ -6,7 +6,7 @@ from models.orm.users import User
 from context import Context, ctx
 from loggers.logger import logger
 import time
-from loggers.attempts_logger import log_login_attempt
+from loggers.logger import log_login_attempt
 
 
 app = FastAPI()
@@ -18,17 +18,13 @@ def read_root():
 
 @app.post("/login")
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
-    start_time = time.perf_counter()
     user = session.exec(select(User).where(User.username == payload.username)).first()
     logger.info(f"hash mode is {ctx.settings.hash_mode}")
     if not user:
-        log_login_attempt(username=user.username, result="User not found", latency_ms=(time.perf_counter() - start_time) * 1000)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
-        log_login_attempt(username=user.username, result="Invalid credentials", latency_ms=(time.perf_counter() - start_time) * 1000)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    log_login_attempt(username=user.username, result="Login successful",latency_ms=(time.perf_counter() - start_time) * 1000)
     return {"message": "Login successful"}
 
 @app.post("/register", status_code=status.HTTP_201_CREATED)
