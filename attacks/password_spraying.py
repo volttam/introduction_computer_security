@@ -8,14 +8,15 @@ def password_spraying():
     password_spraying attack
     :return:
     """
-    ctx.user_handler.delete_user("test_register_user_1")
     users = ctx.user_handler.get_all_users()
     passwords = ctx.file_manager.get_password_spraying_passwords
     client_service = ApiClientService()
-    client_service.login(username="weak_password_user_1", password=passwords[0])
     for user in users:
         for password in passwords:
-            client_service.login(username=user.username, password=password)
+            results = client_service.login(username=user.username, password=password)
+            # if login successful then go to the next user
+            if results["status_code"] == 200:
+                break
 
 
 
