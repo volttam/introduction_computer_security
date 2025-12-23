@@ -9,7 +9,7 @@ class Context:
         self.db_manager = DBManager()
         self.settings = Settings()
         self.password_hasher_selector = PasswordHasherSelector()
-        self.user_handler = UserHandler()
+        self.user_handler = UserHandler(db_manager=self.db_manager)
         self.file_manager = FileManager()
 
 

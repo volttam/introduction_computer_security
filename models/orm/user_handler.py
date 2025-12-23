@@ -1,11 +1,11 @@
 from db_manager import DBManager
 from models.orm.users import User
 from sqlmodel import select
-
+from loggers.logger import logger
 
 class UserHandler:
 
-    def __init__(self):
+    def __init__(self, db_manager: DBManager):
         self.db_manager = DBManager()
 
     @staticmethod
@@ -37,5 +37,20 @@ class UserHandler:
         for user in results:
             users.append(user)
         return users
+
+    def delete_user(self, user_name: str) -> None:
+        """
+        Delete a user from the database
+        :param user_name: user name to delete
+        :return:
+        """
+        logger.info(f"Deleting user name {user_name}")
+        session = self.db_manager.get_session()
+        user_to_delete = session.exec(select(User).where(User.username == user_name)).first()
+        if user_to_delete:
+            session.delete(user_to_delete)
+        session.commit()
+        session.close()
+
 
 

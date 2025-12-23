@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from models.orm.users import User
 from context import Context, ctx
 from loggers.logger import logger
+from attacks.password_spraying import password_spraying
 
 
 app = FastAPI()
@@ -59,3 +60,4 @@ def register_user(
         "detail": "User registered successfully",
         "user_id": user.id,
     }
+

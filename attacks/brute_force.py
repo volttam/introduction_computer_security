@@ -20,8 +20,5 @@ def brute_force_attack():
             break
 
 
-if __name__ == "__main__":
-    brute_force_attack()
-
 
 
