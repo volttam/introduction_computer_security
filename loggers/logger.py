@@ -26,3 +26,5 @@ def get_logger(name: str) -> Logger:
     logger.addHandler(handler)
 
     return logger
+
+logger = get_logger(__name__)

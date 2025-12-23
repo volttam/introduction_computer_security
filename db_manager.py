@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from typing import Generator, Optional
-
+from typing import Generator
+from pathlib import Path
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy.engine import Engine
 
+BASE_DIR = Path(__file__).resolve().parent
 
 class DBManager:
     """
     Owns the SQLModel engine and provides DB initialization + sessions.
     """
-    def __init__(self, database_url: str = "sqlite:///./data.db", echo: bool = False):
+    def __init__(self, database_url: str = f"sqlite:///{BASE_DIR}/data.db", echo: bool = False):
         self.database_url = database_url
         self.echo = echo
         self._initialized: bool = False
@@ -29,9 +30,11 @@ class DBManager:
             SQLModel.metadata.create_all(self.engine)
             self._initialized = True
 
-    def get_session(self) -> Generator[Session, None, None]:
+    def get_session(self) -> Session:
         """
-        Get db session
+        Get db session directly.
         """
-        with Session(self.engine) as session:
-            yield session
+        session = Session(self.engine)
+        return session
+
+

@@ -1,8 +1,17 @@
-
 from db_manager import DBManager
-from logger import get_logger
+from settings.settings import Settings
+from hashing.passwordHasherSelector import PasswordHasherSelector
+from models.orm.user_handler import UserHandler
+from file_managers.file_manager import FileManager
 
 class Context:
     def __init__(self):
         self.db_manager = DBManager()
-        self.logger = get_logger("logger")
+        self.settings = Settings()
+        self.password_hasher_selector = PasswordHasherSelector()
+        self.user_handler = UserHandler(db_manager=self.db_manager)
+        self.file_manager = FileManager()
+
+
+ctx = Context()
+
