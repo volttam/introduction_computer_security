@@ -20,4 +20,4 @@ def user_lockout_dependency(payload: LoginRequest) -> None:
     :return:
     """
     logger.info("User lockout dependency")
-    ctx.user_lockout_manager.check_not_locked(payload.username)
+    ctx.user_lockout_manager.check_user_lockout(payload.username)
