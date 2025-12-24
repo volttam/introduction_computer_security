@@ -4,9 +4,8 @@ from models.api_requests.api_requests import LoginRequest, RegisterRequest
 from sqlmodel import Session, select
 from models.orm.users import User
 from context import Context, ctx
-from loggers.logger import get_logger
-
-logger = get_logger(__name__)
+from loggers.logger import logger
+from dependecies import rate_limit_login_dependency
 
 
 app = FastAPI()
@@ -16,13 +15,11 @@ def read_root():
     return {"message": "Hello World"}
 
 
-@app.post("/login")
+@app.post("/login", dependencies=[Depends(rate_limit_login_dependency)])
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    logger.info(22222)
-    ctx.rate_limiter.check_requests_per_user(user.username)
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
