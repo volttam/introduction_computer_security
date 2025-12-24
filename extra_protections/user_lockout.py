@@ -3,11 +3,11 @@ from loggers.logger import get_logger
 
 logger = get_logger(__name__)
 
-class LockoutManager:
+class UserLockoutManager:
     def __init__(
         self,
         lockout_enabled: bool,
-        max_attempts: int = 5,
+        max_attempts: int = 10,
     ):
         self.lockout_enabled = lockout_enabled
         self.max_attempts = max_attempts
