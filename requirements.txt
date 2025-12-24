@@ -9,3 +9,4 @@ python-dotenv
 pydantic-settings>=2.0
 pytest
 httpx
+slowapi

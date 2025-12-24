@@ -19,6 +19,7 @@ def brute_force_attack():
         if response["status_code"] == 200:
             break
 
-
+if __name__ == "__main__":
+    brute_force_attack()
 
 
