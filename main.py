@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from models.orm.users import User
 from context import Context, ctx
 from loggers.logger import logger
-from extra_protections.rate_limit import rate_limit_decorator
+from extra_protections.rate_limit import limit
 
 
 app = FastAPI()
@@ -16,7 +16,7 @@ def read_root():
 
 
 @app.post("/login")
-@ctx.rate_limiter.limit()
+@limit(ctx.rate_limiter)
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     logger.info(f"hash mode is {ctx.settings.hash_mode}")
