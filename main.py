@@ -5,7 +5,7 @@ from sqlmodel import Session, select
 from models.orm.users import User
 from context import Context, ctx
 from loggers.logger import logger
-from dependecies import rate_limit_login_dependency
+from dependecies import *
 
 
 app = FastAPI()
@@ -15,7 +15,7 @@ def read_root():
     return {"message": "Hello World"}
 
 
-@app.post("/login", dependencies=[Depends(rate_limit_login_dependency)])
+@app.post("/login", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency)])
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
