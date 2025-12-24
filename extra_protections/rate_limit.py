@@ -1,7 +1,8 @@
 from functools import wraps
 from fastapi import HTTPException, status
-from loggers.logger import logger
+from loggers.logger import get_logger
 
+logger = get_logger(__name__)
 
 class RateLimiter:
     def __init__(self, rate_limit_enabled: bool, max_attempts: int = 10):
@@ -11,6 +12,7 @@ class RateLimiter:
 
     def check_requests_per_user(self, username: str) -> None:
         logger.info(f"Checking requests per user: {username}")
+        print(8888)
         if not self.rate_limit_enabled:
             return
         logger.info(f"rate limit enabled")
@@ -22,14 +24,4 @@ class RateLimiter:
             )
         self.attempts_per_user[username] = count + 1
 
-def limit(rate_limiter: RateLimiter):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            logger.info(f"entered limit decorator")
-            payload = kwargs.get("payload")
-            if payload and hasattr(payload, "username"):
-                rate_limiter.check_requests_per_user(payload.username)
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
+
