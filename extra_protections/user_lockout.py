@@ -14,7 +14,7 @@ class LockoutManager:
         self.failed_attempts: dict[str, int] = {}
         self.locked_users: set[str] = set()
 
-    def check_attempt_per_user(self, username: str) -> None:
+    def check_user_lockout(self, username: str) -> None:
         """
         Lockout check + mutation.
         """
