@@ -8,11 +8,12 @@ class ApiClientService:
     """
     Client-side service that communicates with the FastAPI app.
     """
-    def __init__(self, seed_group: str, hash_mode: str, base_url: str = "http://127.0.0.1:8001", timeout: float = 6.0, ):
+    def __init__(self, seed_group: str, hash_mode: str, captcha_enabled: bool, base_url: str = "http://127.0.0.1:8001", timeout: float = 6.0, ):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.seed_group = seed_group
         self.hash_mode = hash_mode
+        self.captcha_enabled = captcha_enabled
 
     def __fetch_captcha_token(self) -> str:
         """
@@ -37,8 +38,8 @@ class ApiClientService:
             "password": password,
         }
         headers = {}
-        if self.captcha_token:
-            headers["X-CAPTCHA-TOKEN"] = self.captcha_token
+        if self.captcha_enabled:
+            headers["X-CAPTCHA-TOKEN"] = str(self.captcha_enabled)
         start_time = time.perf_counter()
         logger.info(f"Login request to {url}")
         try:
