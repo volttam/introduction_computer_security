@@ -3,7 +3,6 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from models.api_requests.api_requests import LoginRequest, RegisterRequest
 from sqlmodel import Session, select
 from models.orm.users import User
-from context import Context, ctx
 from loggers.logger import logger
 from dependecies import *
 
@@ -15,7 +14,7 @@ def read_root():
     return {"message": "Hello World"}
 
 
-@app.post("/login", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency)])
+@app.post("/login", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency), Depends(captcha_dependency)])
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
@@ -24,6 +23,14 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     return {"message": "Login successful"}
+
+@app.get("/admin/get_captcha_token")
+def get_captcha_token(group_seed: str):
+    if group_seed != ctx.settings.seed_group:
+        raise HTTPException(status_code=403)
+    return {
+        "captcha_token": ctx.captcha_manager.issue_token()
+    }
 
 @app.post("/register", status_code=status.HTTP_201_CREATED)
 def register_user(

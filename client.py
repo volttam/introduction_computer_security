@@ -8,9 +8,24 @@ class ApiClientService:
     """
     Client-side service that communicates with the FastAPI app.
     """
-    def __init__(self, base_url: str = "http://127.0.0.1:8001", timeout: float = 6.0):
+    def __init__(self, seed_group: str, hash_mode: str, base_url: str = "http://127.0.0.1:8001", timeout: float = 6.0, ):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.seed_group = seed_group
+        self.hash_mode = hash_mode
+
+    def __fetch_captcha_token(self) -> str:
+        """
+        Fetches the captcha token
+        :return:
+        """
+        url = f"{self.base_url}/admin/get_captcha_token"
+        params = {"group_seed": self.seed_group}
+        response = httpx.get(url, params=params, timeout=self.timeout)
+        response.raise_for_status()
+        token = response.json()["captcha_token"]
+        self.captcha_token = token
+        return token
 
     def login(self, username: str, password: str) -> dict:
         """
@@ -21,12 +36,16 @@ class ApiClientService:
             "username": username,
             "password": password,
         }
+        headers = {}
+        if self.captcha_token:
+            headers["X-CAPTCHA-TOKEN"] = self.captcha_token
         start_time = time.perf_counter()
         logger.info(f"Login request to {url}")
         try:
             response = httpx.post(
                 url,
                 json=payload,
+                headers=headers,
                 timeout=self.timeout,
             )
         except httpx.RequestError as exc:
@@ -34,11 +53,16 @@ class ApiClientService:
             raise
         latency_ms = (time.perf_counter() - start_time) * 1000
         if response.status_code == 200:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=(time.perf_counter() - start_time) * 1000, seed_group=ctx.settings.seed_group, hash_mode=ctx.settings.hash_mode)
+            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
         else:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=(time.perf_counter() - start_time) * 1000, seed_group=ctx.settings.seed_group, hash_mode=ctx.settings.hash_mode)
+            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
+            if response.json().get("captcha_required") is True:
+                self.__fetch_captcha_token()
+                return self.login(username, password)
         return {
             "status_code": response.status_code,
             "content": response.json() if response.content else None,
             "latency_ms": round(latency_ms, 2),
         }
+
+
