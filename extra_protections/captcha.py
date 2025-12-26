@@ -29,13 +29,16 @@ class CaptchaManager:
         if attempts < self.max_attempts:
             return
         logger.info(f"captcha token is {captcha_token} and valid tokens are {self.valid_tokens}")
-        if not captcha_token or captcha_token not in self.valid_tokens:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail={
-                    "captcha_required": True,
-                },
-            )
+        if captcha_token and captcha_token in self.valid_tokens:
+            self.valid_tokens.discard(captcha_token)
+            self.failed_attempts[username] = 0
+            return
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "captcha_required": True,
+            },
+        )
 
     def register_failure(self, username: str):
         """
