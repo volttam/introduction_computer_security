@@ -1,8 +1,9 @@
 import httpx
 import time
-from loggers.logger import logger
+from loggers.logger import get_logger
+
+logger = get_logger(__name__)
 from loggers.attempts_logger import log_login_attempt
-from context import ctx
 
 class ApiClientService:
     """
@@ -14,19 +15,21 @@ class ApiClientService:
         self.seed_group = seed_group
         self.hash_mode = hash_mode
         self.captcha_enabled = captcha_enabled
+        self.captcha_token: str | None = None
 
-    def __fetch_captcha_token(self) -> str:
+    def __fetch_captcha_token(self) -> None:
         """
         Fetches the captcha token
         :return:
         """
         url = f"{self.base_url}/admin/get_captcha_token"
         params = {"group_seed": self.seed_group}
+        logger.info(f"Fetching captcha token from: {url}")
         response = httpx.get(url, params=params, timeout=self.timeout)
         response.raise_for_status()
         token = response.json()["captcha_token"]
+        logger.info(f"Captcha token: {token}")
         self.captcha_token = token
-        return token
 
     def login(self, username: str, password: str) -> dict:
         """
@@ -38,8 +41,8 @@ class ApiClientService:
             "password": password,
         }
         headers = {}
-        if self.captcha_enabled:
-            headers["X-CAPTCHA-TOKEN"] = str(self.captcha_enabled)
+        if self.captcha_enabled and self.captcha_token:
+            headers["X-CAPTCHA-TOKEN"] = self.captcha_token
         start_time = time.perf_counter()
         logger.info(f"Login request to {url}")
         try:
@@ -57,7 +60,11 @@ class ApiClientService:
             log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
         else:
             log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
-            if response.json().get("captcha_required") is True:
+            logger.info(f"captcha required is {response.json().get("captcha_required")}")
+            logger.info(f"response is: {response.json()}")
+            data = response.json()
+            detail= data.get("detail")
+            if isinstance(detail, dict) and detail.get("captcha_required") is True is True:
                 self.__fetch_captcha_token()
                 return self.login(username, password)
         return {

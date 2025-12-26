@@ -1,6 +1,10 @@
 from fastapi import HTTPException, status
 import secrets
 
+from loggers.logger import get_logger
+
+logger = get_logger(__name__)
+
 class CaptchaManager:
     def __init__(self, enabled: bool, max_attempts: int = 10):
         self.captcha_enabled = enabled
@@ -13,6 +17,7 @@ class CaptchaManager:
         issues a random token
         :return:
         """
+        logger.info(f"issuing random captcha token")
         token = secrets.token_urlsafe(16)
         self.valid_tokens.add(token)
         return token
@@ -23,6 +28,7 @@ class CaptchaManager:
         attempts = self.failed_attempts.get(username, 0)
         if attempts < self.max_attempts:
             return
+        logger.info(f"captcha token is {captcha_token} and valid tokens are {self.valid_tokens}")
         if not captcha_token or captcha_token not in self.valid_tokens:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

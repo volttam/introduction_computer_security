@@ -29,6 +29,7 @@ def captcha_dependency(
     payload: LoginRequest,
     captcha_token: str | None = Header(default=None, alias="X-CAPTCHA-TOKEN"),
 ):
+    logger.info(f"Captcha token in depedency is {captcha_token}")
     ctx.captcha_manager.check_captcha_for_user(payload.username, captcha_token)
     try:
         yield
@@ -36,5 +37,6 @@ def captcha_dependency(
         ctx.captcha_manager.register_failure(payload.username)
         raise
     else:
+        logger.info(f"reset captcha username {payload.username}")
         ctx.captcha_manager.reset(payload.username)
 
