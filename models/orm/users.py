@@ -1,6 +1,6 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
-
+from datetime import datetime
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
@@ -26,4 +26,13 @@ class User(SQLModel, table=True):
     )
     argon2id_password_hash: str = Field(
         nullable=False
+    )
+    totp_secret: Optional[str] = Field(
+        default=None,
+        max_length=128,
+        description="Base32 encoded TOTP secret",
+    )
+    totp_last_verified_at: Optional[datetime] = Field(
+        default=None,
+        description="Last successful TOTP verification timestamp",
     )
