@@ -69,7 +69,8 @@ def register_user(
         "user_id": user.id,
     }
 
-def login_user_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
+@app.post("/login_totp", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency), Depends(captcha_dependency)])
+def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

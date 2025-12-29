@@ -1,0 +1,124 @@
+{
+    "users": [
+        {
+            "username": "weak_password_user_1",
+            "totp_secret": "OZXUOUPYTHJB7SJGCLWURVC3M3HEIKZL"
+        },
+        {
+            "username": "weak_password_user_2",
+            "totp_secret": "X754PBYHRTKIZL6KBNV7KVPTHYRYIXGM"
+        },
+        {
+            "username": "weak_password_user_3",
+            "totp_secret": "MDW7FOLQIHFHD5TNHMNKAWC7LTUC2BLA"
+        },
+        {
+            "username": "weak_password_user_4",
+            "totp_secret": "3BTXUL3HABISPZY3IIS32IBRZFRSHK6T"
+        },
+        {
+            "username": "weak_password_user_5",
+            "totp_secret": "EBAMKTQAMIATRD7UFM6FZXNALK4NRGHS"
+        },
+        {
+            "username": "weak_password_user_6",
+            "totp_secret": "GH4IHJPSB2E3QB3CODLUVY3O3DOFPJS7"
+        },
+        {
+            "username": "weak_password_user_7",
+            "totp_secret": "KXBXGWQLKXDGV7R43ECATM77X65GYLXT"
+        },
+        {
+            "username": "weak_password_user_8",
+            "totp_secret": "DD4VV2AD663XKSLWQZZ5XHQRMJIM26Y6"
+        },
+        {
+            "username": "weak_password_user_9",
+            "totp_secret": "VR4HDOYLIJP56FQINUCHSTI2DHHTDAYZ"
+        },
+        {
+            "username": "weak_password_user_10",
+            "totp_secret": "ERSZGUJRTPPEVWC6V5JHCG27COQKTLBW"
+        },
+        {
+            "username": "medium_password_user_1",
+            "totp_secret": "NTHOG64SIUL3H3UUOW5C55O6UFEKIUBI"
+        },
+        {
+            "username": "medium_password_user_2",
+            "totp_secret": "LORWDUHQNKKAGK2KQ2DALIZHTKE6VKFZ"
+        },
+        {
+            "username": "medium_password_user_3",
+            "totp_secret": "KWCRJSQVIG7TSCPFPKWWQAIAKIUF6VGS"
+        },
+        {
+            "username": "medium_password_user_4",
+            "totp_secret": "KDS235JHKJSJKV6SK4Y4BHINNYNRW3DW"
+        },
+        {
+            "username": "medium_password_user_5",
+            "totp_secret": "DUPMRUNKN7D4QBG6TARCAAGABHUC7LN3"
+        },
+        {
+            "username": "medium_password_user_6",
+            "totp_secret": "7GKIMSYYECYEN52JXWEPYZENV23OHPQO"
+        },
+        {
+            "username": "medium_password_user_7",
+            "totp_secret": "NCZQZQTEX6AXOOUF6RST5FF56GM4ZERT"
+        },
+        {
+            "username": "medium_password_user_8",
+            "totp_secret": "ZJD5QMKZ4NP56BRVPYB7D2LW5EIL6B4P"
+        },
+        {
+            "username": "medium_password_user_9",
+            "totp_secret": "7PUOPJYFJWWIIBIEIOEGMCPPXLJGDZUE"
+        },
+        {
+            "username": "medium_password_user_10",
+            "totp_secret": "QQBFP76UKTHOSAK2EPZHSJDEQ5ZKKEDE"
+        },
+        {
+            "username": "strong_password_user_1",
+            "totp_secret": "FIEEUTJYGAMT4ZZGJS5GGJRZ3KC47QGZ"
+        },
+        {
+            "username": "strong_password_user_2",
+            "totp_secret": "ODRY7WTVMBHUQCOYB7KUPTVZ7TSSJH6H"
+        },
+        {
+            "username": "strong_password_user_3",
+            "totp_secret": "P4BD53JDTEO6YJVGRAID3PFZPV5FKQHT"
+        },
+        {
+            "username": "strong_password_user_4",
+            "totp_secret": "L7H7RSA4AA22JCZA2RTHK3H4DVX3XCF6"
+        },
+        {
+            "username": "strong_password_user_5",
+            "totp_secret": "T5KT5LJHRKS6JTLTZNQPLGCAGFMX7NVC"
+        },
+        {
+            "username": "strong_password_user_6",
+            "totp_secret": "AWJWIAMUPIV6PVFFGKEG7NO3W3DSPZHT"
+        },
+        {
+            "username": "strong_password_user_7",
+            "totp_secret": "5EZKU5MKPNTJCIYQB33N7GI7JEG4A5XT"
+        },
+        {
+            "username": "strong_password_user_8",
+            "totp_secret": "7VCM5U23JJKHAKAZTLBQCG7KGTVWFF5V"
+        },
+        {
+            "username": "strong_password_user_9",
+            "totp_secret": "I4KJWYABL77GHX3KEXMZQA5DKS5G7K5N"
+        },
+        {
+            "username": "strong_password_user_10",
+            "totp_secret": "RK4LGMJ6YQNI3ZGWP5UTP4TRPKZMI5IW"
+        }
+    ]
+}

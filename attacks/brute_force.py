@@ -15,7 +15,7 @@ def brute_force_attack():
     passwords = ctx.file_manager.get_brute_force_passwords
     client_service = ApiClientService(hash_mode=ctx.settings.hash_mode, seed_group=ctx.settings.seed_group, captcha_enabled=ctx.settings.captcha_enabled)
     for password in passwords:
-        response = client_service.login(username=USER_NAME, password=password)
+        response = client_service.login_totp(username=USER_NAME, password=password)
         if response["status_code"] == 200:
             break
 

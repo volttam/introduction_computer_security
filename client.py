@@ -11,13 +11,15 @@ class ApiClientService:
     """
     Client-side service that communicates with the FastAPI app.
     """
+    BASE_DIR = Path(__file__).resolve().parent
+
     def __init__(self,
         seed_group: str,
         hash_mode: str,
         captcha_enabled: bool,
         base_url: str = "http://127.0.0.1:8001",
         timeout: float = 6.0,
-        users_file_path: str | Path = "users.json",
+        users_file_path: str | Path = (BASE_DIR/"users.json"),
         totp_period: int = 30,
         totp_digits: int = 6,):
         self.base_url = base_url.rstrip("/")
@@ -39,7 +41,7 @@ class ApiClientService:
         if not self.users_file_path.exists():
             raise FileNotFoundError(f"users.json file not found at {self.users_file_path}")
         content = self.users_file_path.read_text(encoding="utf-8")
-        data = json.loads(content)
+        data = json.loads(content)["users"]
         return {entry["username"]: entry for entry in data}
 
     def _get_user_record(self, username: str) -> dict:
