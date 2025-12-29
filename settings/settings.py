@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     seed_group: str = Field(default="0x039C76D")
     rate_limit_enabled: bool = Field(default=True, alias="RATE_LIMIT_ENABLED")
     user_lockout_enabled: bool = Field(default=True, alias="USER_LOCKOUT_ENABLED")
+    captcha_enabled: bool = Field(default=True, alias="CAPTCHA_ENABLED")
 
     class Config:
         env_file = BASE_DIR / "config" / ".env"

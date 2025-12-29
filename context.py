@@ -5,6 +5,8 @@ from models.orm.user_handler import UserHandler
 from file_managers.file_manager import FileManager
 from extra_protections.rate_limit import RateLimiter
 from extra_protections.user_lockout import UserLockoutManager
+from extra_protections.captcha import CaptchaManager
+from extra_protections.totp import TOTPManager
 
 class Context:
     def __init__(self):
@@ -15,6 +17,8 @@ class Context:
         self.file_manager = FileManager()
         self.rate_limiter = RateLimiter(self.settings.rate_limit_enabled)
         self.user_lockout_manager = UserLockoutManager(self.settings.user_lockout_enabled)
+        self.captcha_manager = CaptchaManager(self.settings.captcha_enabled)
+        self.totp_manager = TOTPManager()
 
 
 ctx = Context()

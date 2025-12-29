@@ -30,11 +30,11 @@ class DBManager:
             SQLModel.metadata.create_all(self.engine)
             self._initialized = True
 
-    def get_session(self) -> Session:
-        """
-        Get db session directly.
-        """
+    def get_session(self):
         session = Session(self.engine)
-        return session
+        try:
+            yield session
+        finally:
+            session.close()
 
 
