@@ -14,7 +14,7 @@ attempts_logger.propagate = False
 
 def log_login_attempt(
     *,
-    timestamp: float = time.time()
+    timestamp: float = time.time(),
     seed_group: str = ctx.settings.seed_group,
     username: str,
     hash_mode: str = ctx.settings.hash_mode,
