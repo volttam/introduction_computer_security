@@ -17,22 +17,39 @@ class ApiClientService:
         seed_group: str,
         hash_mode: str,
         captcha_enabled: bool,
+        rate_limit_enabled: bool,
+        user_lockout_enabled: bool,
         base_url: str = "http://127.0.0.1:8001",
         timeout: float = 6.0,
         users_file_path: str | Path = (BASE_DIR/"users.json"),
         totp_period: int = 30,
-        totp_digits: int = 6,):
+        totp_digits: int = 6,
+        ):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.seed_group = seed_group
         self.hash_mode = hash_mode
         self.captcha_enabled = captcha_enabled
+        self.rate_limit_enabled = rate_limit_enabled
+        self.user_lockout_enabled = user_lockout_enabled
         self.captcha_token: str | None = None
         self.users_file_path = Path(users_file_path)
         self.totp_period = totp_period
         self.totp_digits = totp_digits
         self.totp_manager = TOTPManager()
         self._user_store = self._load_user_store()
+
+    def _get_protection_flags(self, *, include_totp: bool = False) -> list[str] | None:
+        protection_flags: list[str] = []
+        if self.rate_limit_enabled:
+            protection_flags.append("rate_limit")
+        if self.user_lockout_enabled:
+            protection_flags.append("user_lockout")
+        if self.captcha_enabled:
+            protection_flags.append("captcha")
+        if include_totp:
+            protection_flags.append("totp")
+        return protection_flags or None
 
     def _load_user_store(self) -> dict[str, dict]:
         """
@@ -90,9 +107,9 @@ class ApiClientService:
             raise
         latency_ms = (time.perf_counter() - start_time) * 1000
         if response.status_code == 200:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
+            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
         else:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode)
+            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
             logger.info(f"captcha required is {response.json().get("captcha_required")}")
             logger.info(f"response is: {response.json()}")
             data = response.json()
@@ -143,6 +160,7 @@ class ApiClientService:
                 latency_ms=latency_ms,
                 seed_group=self.seed_group,
                 hash_mode=self.hash_mode,
+                protection_flags=self._get_protection_flags(include_totp=True)
             )
         else:
             log_login_attempt(
@@ -151,6 +169,7 @@ class ApiClientService:
                 latency_ms=latency_ms,
                 seed_group=self.seed_group,
                 hash_mode=self.hash_mode,
+                protection_flags=self._get_protection_flags(include_totp=True)
             )
             logger.info(f"response is: {response.json()}")
             if isinstance(result_detail, dict) and result_detail.get("captcha_required") is True:

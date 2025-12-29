@@ -18,7 +18,7 @@ def log_login_attempt(
     seed_group: str = ctx.settings.seed_group,
     username: str,
     hash_mode: str = ctx.settings.hash_mode,
-    protection_flags: list[str] = None,
+    protection_flags: list[str],
     result: str,
     latency_ms: float,
 ):
