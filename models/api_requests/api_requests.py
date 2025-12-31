@@ -13,5 +13,4 @@ class LoginRequest(BaseModel):
 
 class TOTPLoginRequest(BaseModel):
     username: str
-    password: str
     totp_code: str

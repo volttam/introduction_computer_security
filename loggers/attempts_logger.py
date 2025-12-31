@@ -14,7 +14,6 @@ attempts_logger.propagate = False
 
 def log_login_attempt(
     *,
-    timestamp: float = time.time(),
     seed_group: str = ctx.settings.seed_group,
     username: str,
     hash_mode: str = ctx.settings.hash_mode,
@@ -22,6 +21,7 @@ def log_login_attempt(
     result: str,
     latency_ms: float,
 ):
+    timestamp = time.time()
     log_entry = {
         "timestamp": timestamp,
         "seed_group": seed_group,
@@ -31,5 +31,4 @@ def log_login_attempt(
         "result": result,
         "latency_ms": latency_ms,
     }
-
     attempts_logger.info(json.dumps(log_entry))

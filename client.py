@@ -12,6 +12,7 @@ class ApiClientService:
     Client-side service that communicates with the FastAPI app.
     """
     BASE_DIR = Path(__file__).resolve().parent
+    TOTP_CODE = "000000"
 
     def __init__(self,
         seed_group: str,
@@ -19,6 +20,7 @@ class ApiClientService:
         captcha_enabled: bool,
         rate_limit_enabled: bool,
         user_lockout_enabled: bool,
+        totp_enabled: bool,
         base_url: str = "http://127.0.0.1:8001",
         timeout: float = 6.0,
         users_file_path: str | Path = (BASE_DIR/"users.json"),
@@ -32,14 +34,14 @@ class ApiClientService:
         self.captcha_enabled = captcha_enabled
         self.rate_limit_enabled = rate_limit_enabled
         self.user_lockout_enabled = user_lockout_enabled
+        self.totp_enabled = totp_enabled
         self.captcha_token: str | None = None
         self.users_file_path = Path(users_file_path)
         self.totp_period = totp_period
         self.totp_digits = totp_digits
         self.totp_manager = TOTPManager()
-        self._user_store = self._load_user_store()
 
-    def _get_protection_flags(self, *, include_totp: bool = False) -> list[str] | None:
+    def _get_protection_flags(self) -> list[str] | None:
         protection_flags: list[str] = []
         if self.rate_limit_enabled:
             protection_flags.append("rate_limit")
@@ -47,25 +49,9 @@ class ApiClientService:
             protection_flags.append("user_lockout")
         if self.captcha_enabled:
             protection_flags.append("captcha")
-        if include_totp:
+        if self.totp_enabled:
             protection_flags.append("totp")
         return protection_flags or None
-
-    def _load_user_store(self) -> dict[str, dict]:
-        """
-        Load the local users.json file
-        """
-        if not self.users_file_path.exists():
-            raise FileNotFoundError(f"users.json file not found at {self.users_file_path}")
-        content = self.users_file_path.read_text(encoding="utf-8")
-        data = json.loads(content)["users"]
-        return {entry["username"]: entry for entry in data}
-
-    def _get_user_record(self, username: str) -> dict:
-        return self._user_store[username]
-
-    def _generate_totp_code(self, secret: str) -> str:
-        return self.totp_manager.generate_current_code(secret)
 
     def __fetch_captcha_token(self) -> None:
         """
@@ -107,7 +93,10 @@ class ApiClientService:
             raise
         latency_ms = (time.perf_counter() - start_time) * 1000
         if response.status_code == 200:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
+            if response.json()["message"] == "Credentials are valid but totp code is required":
+                self.login_totp(username, self.TOTP_CODE)
+            else:
+                log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
         else:
             log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
             logger.info(f"captcha required is {response.json().get("captcha_required")}")
@@ -123,29 +112,21 @@ class ApiClientService:
             "latency_ms": round(latency_ms, 2),
         }
 
-    def login_totp(self, username: str, password: str) -> dict:
+    def login_totp(self, username: str, totp_code: str) -> dict:
         """
         Send a login_totp request
         """
-        user_record = self._get_user_record(username)
-        secret = user_record.get("totp_secret")
-        totp_code = self._generate_totp_code(secret)
         url = f"{self.base_url}/login_totp"
         payload = {
             "username": username,
-            "password": password,
             "totp_code": totp_code,
         }
-        headers = {}
-        if self.captcha_enabled and self.captcha_token:
-            headers["X-CAPTCHA-TOKEN"] = self.captcha_token
         start_time = time.perf_counter()
         logger.info(f"Login TOTP request to {url}")
         try:
             response = httpx.post(
                 url,
                 json=payload,
-                headers=headers,
                 timeout=self.timeout,
             )
         except httpx.RequestError as exc:
@@ -160,7 +141,7 @@ class ApiClientService:
                 latency_ms=latency_ms,
                 seed_group=self.seed_group,
                 hash_mode=self.hash_mode,
-                protection_flags=self._get_protection_flags(include_totp=True)
+                protection_flags=self._get_protection_flags()
             )
         else:
             log_login_attempt(
@@ -169,13 +150,9 @@ class ApiClientService:
                 latency_ms=latency_ms,
                 seed_group=self.seed_group,
                 hash_mode=self.hash_mode,
-                protection_flags=self._get_protection_flags(include_totp=True)
+                protection_flags=self._get_protection_flags()
             )
             logger.info(f"response is: {response.json()}")
-            if isinstance(result_detail, dict) and result_detail.get("captcha_required") is True:
-                self.__fetch_captcha_token()
-                return self.login_totp(username, password)
-
         return {
             "status_code": response.status_code,
             "content": response.json() if response.content else None,
