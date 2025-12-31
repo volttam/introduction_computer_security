@@ -13,7 +13,7 @@ def brute_force_attack():
     """
     logger.info("Initializing brute force attack")
     passwords = ctx.file_manager.get_brute_force_passwords
-    client_service = ApiClientService(hash_mode=ctx.settings.hash_mode, seed_group=ctx.settings.seed_group, captcha_enabled=ctx.settings.captcha_enabled, rate_limit_enabled=ctx.settings.rate_limit_enabled, user_lockout_enabled=ctx.settings.user_lockout_enabled, totp_enabled=ctx.settings.totp_enabled)
+    client_service = ApiClientService()
     for password in passwords:
         response = client_service.login(username=USER_NAME, password=password)
         if response["status_code"] == 200:

@@ -40,14 +40,27 @@ def test_login_weak_user_wrong_password():
 
 def test_delete_all_users():
     """
-    Register users, delete them all, and confirm the database is empty.
+    Drop the users table and confirm it no longer exists.
     """
     db = DBManager()
-    with db.get_session() as session:
-        session.exec(delete(User))
-        session.commit()
-        remaining_users = session.exec(select(User)).all()
-        assert remaining_users == []
+
+    session_gen = db.get_session()
+    session = next(session_gen)
+
+    try:
+        # Drop the table
+        User.__table__.drop(bind=session.get_bind())
+
+        # Verify table is gone
+        from sqlalchemy import inspect
+        inspector = inspect(session.get_bind())
+
+        assert "user" not in inspector.get_table_names()
+
+    finally:
+        session.close()
+
+
 
 
 def test_login_totp_success():

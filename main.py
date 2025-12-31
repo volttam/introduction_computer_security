@@ -56,8 +56,9 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    password = ctx.pepper_manager.apply_pepper_if_activated(payload.password)
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
-    if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
+    if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     if ctx.settings.totp_enabled:
         return {"message": "Credentials are valid but totp code is required"}

@@ -15,31 +15,16 @@ class ApiClientService:
     TOTP_CODE = "000000"
 
     def __init__(self,
-        seed_group: str,
-        hash_mode: str,
-        captcha_enabled: bool,
-        rate_limit_enabled: bool,
-        user_lockout_enabled: bool,
-        totp_enabled: bool,
         base_url: str = "http://127.0.0.1:8001",
         timeout: float = 6.0,
-        users_file_path: str | Path = (BASE_DIR/"users.json"),
         totp_period: int = 30,
-        totp_digits: int = 6,
+        totp_digits: int = 6
         ):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
-        self.seed_group = seed_group
-        self.hash_mode = hash_mode
-        self.captcha_enabled = captcha_enabled
-        self.rate_limit_enabled = rate_limit_enabled
-        self.user_lockout_enabled = user_lockout_enabled
-        self.totp_enabled = totp_enabled
         self.captcha_token: str | None = None
-        self.users_file_path = Path(users_file_path)
         self.totp_period = totp_period
         self.totp_digits = totp_digits
-        self.totp_manager = TOTPManager()
 
     def __fetch_captcha_token(self) -> None:
         """

@@ -1,7 +1,5 @@
 from context import ctx
-from models.orm.users import User
 from client import ApiClientService
-from models.orm.user_handler import User
 
 def password_spraying():
     """

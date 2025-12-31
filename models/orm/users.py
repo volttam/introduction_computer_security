@@ -21,11 +21,23 @@ class User(SQLModel, table=True):
     sha_256_salt_password_hash: str = Field(
         nullable=False
     )
+    sha_256_salt_password_hash_peppered: Optional[str] = Field(
+        default=None,
+        nullable=True,
+    )
     bcrypt_password_hash: str = Field(
         nullable=False
     )
+    bcrypt_password_hash_peppered: Optional[str] = Field(
+        default=None,
+        nullable=True,
+    )
     argon2id_password_hash: str = Field(
         nullable=False
+    )
+    argon2id_password_hash_peppered: Optional[str] = Field(
+        default=None,
+        nullable=True,
     )
     totp_secret: Optional[str] = Field(
         default=None,
