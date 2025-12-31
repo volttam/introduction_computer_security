@@ -20,6 +20,19 @@ class Context:
         self.captcha_manager = CaptchaManager(self.settings.captcha_enabled)
         self.totp_manager = TOTPManager()
 
+    @property
+    def get_protection_flags(self) -> list[str] | None:
+        protection_flags: list[str] = []
+        if self.settings.rate_limit_enabled:
+            protection_flags.append("rate_limit")
+        if self.settings.user_lockout_enabled:
+            protection_flags.append("user_lockout")
+        if self.settings.captcha_enabled:
+            protection_flags.append("captcha")
+        if self.settings.totp_enabled:
+            protection_flags.append("totp")
+        return protection_flags or None
+
 
 ctx = Context()
 

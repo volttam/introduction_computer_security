@@ -41,18 +41,6 @@ class ApiClientService:
         self.totp_digits = totp_digits
         self.totp_manager = TOTPManager()
 
-    def _get_protection_flags(self) -> list[str] | None:
-        protection_flags: list[str] = []
-        if self.rate_limit_enabled:
-            protection_flags.append("rate_limit")
-        if self.user_lockout_enabled:
-            protection_flags.append("user_lockout")
-        if self.captcha_enabled:
-            protection_flags.append("captcha")
-        if self.totp_enabled:
-            protection_flags.append("totp")
-        return protection_flags or None
-
     def __fetch_captcha_token(self) -> None:
         """
         Fetches the captcha token
@@ -79,7 +67,6 @@ class ApiClientService:
         headers = {}
         if self.captcha_enabled and self.captcha_token:
             headers["X-CAPTCHA-TOKEN"] = self.captcha_token
-        start_time = time.perf_counter()
         logger.info(f"Login request to {url}")
         try:
             response = httpx.post(
@@ -91,14 +78,11 @@ class ApiClientService:
         except httpx.RequestError as exc:
             logger.error(f"Request failed: {exc}")
             raise
-        latency_ms = (time.perf_counter() - start_time) * 1000
         if response.status_code == 200:
+            logger.info(f"response is {response.json()}")
             if response.json()["message"] == "Credentials are valid but totp code is required":
-                self.login_totp(username, self.TOTP_CODE)
-            else:
-                log_login_attempt(username=username, result=f"{response.status_code} {response.json()["message"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
+                self.login_totp(username)
         else:
-            log_login_attempt(username=username, result=f"{response.status_code} {response.json()["detail"]}", latency_ms=latency_ms, seed_group=self.seed_group, hash_mode=self.hash_mode, protection_flags=self._get_protection_flags())
             logger.info(f"captcha required is {response.json().get("captcha_required")}")
             logger.info(f"response is: {response.json()}")
             data = response.json()
@@ -109,19 +93,17 @@ class ApiClientService:
         return {
             "status_code": response.status_code,
             "content": response.json() if response.content else None,
-            "latency_ms": round(latency_ms, 2),
         }
 
-    def login_totp(self, username: str, totp_code: str) -> dict:
+    def login_totp(self, username: str) -> dict:
         """
         Send a login_totp request
         """
         url = f"{self.base_url}/login_totp"
         payload = {
             "username": username,
-            "totp_code": totp_code,
+            "totp_code": self.TOTP_CODE,
         }
-        start_time = time.perf_counter()
         logger.info(f"Login TOTP request to {url}")
         try:
             response = httpx.post(
@@ -132,30 +114,8 @@ class ApiClientService:
         except httpx.RequestError as exc:
             logger.error(f"Request failed: {exc}")
             raise
-        latency_ms = (time.perf_counter() - start_time) * 1000
-        result_detail = response.json().get("detail") if response.content else None
-        if response.status_code == 200:
-            log_login_attempt(
-                username=username,
-                result=f"{response.status_code} {response.json().get('message')}",
-                latency_ms=latency_ms,
-                seed_group=self.seed_group,
-                hash_mode=self.hash_mode,
-                protection_flags=self._get_protection_flags()
-            )
-        else:
-            log_login_attempt(
-                username=username,
-                result=f"{response.status_code} {result_detail}",
-                latency_ms=latency_ms,
-                seed_group=self.seed_group,
-                hash_mode=self.hash_mode,
-                protection_flags=self._get_protection_flags()
-            )
-            logger.info(f"response is: {response.json()}")
         return {
             "status_code": response.status_code,
-            "content": response.json() if response.content else None,
-            "latency_ms": round(latency_ms, 2),
+            "content": response.json() if response.content else None
         }
 

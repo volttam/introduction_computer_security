@@ -2,6 +2,7 @@ import logging
 import json
 import time
 from context import ctx
+from loggers.logger import logger
 
 attempts_logger = logging.getLogger("auth_attempts")
 attempts_logger.setLevel(logging.INFO)
@@ -21,6 +22,7 @@ def log_login_attempt(
     result: str,
     latency_ms: float,
 ):
+    logger.info("logging attempt")
     timestamp = time.time()
     log_entry = {
         "timestamp": timestamp,
