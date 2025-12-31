@@ -15,6 +15,7 @@ class ApiClientService:
     TOTP_CODE = "000000"
 
     def __init__(self,
+        seed_group: str,
         base_url: str = "http://127.0.0.1:8001",
         timeout: float = 6.0,
         totp_period: int = 30,
@@ -22,11 +23,11 @@ class ApiClientService:
         ):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
-        self.captcha_token: str | None = None
+        self.seed_group = seed_group
         self.totp_period = totp_period
         self.totp_digits = totp_digits
 
-    def __fetch_captcha_token(self) -> None:
+    def __fetch_captcha_token(self) -> str:
         """
         Fetches the captcha token
         :return:
@@ -38,9 +39,9 @@ class ApiClientService:
         response.raise_for_status()
         token = response.json()["captcha_token"]
         logger.info(f"Captcha token: {token}")
-        self.captcha_token = token
+        return token
 
-    def login(self, username: str, password: str) -> dict:
+    def login(self, username: str, password: str, headers: dict= None) -> dict:
         """
         Send a login request to the FastAPI server.
         """
@@ -49,9 +50,6 @@ class ApiClientService:
             "username": username,
             "password": password,
         }
-        headers = {}
-        if self.captcha_enabled and self.captcha_token:
-            headers["X-CAPTCHA-TOKEN"] = self.captcha_token
         logger.info(f"Login request to {url}")
         try:
             response = httpx.post(
@@ -73,8 +71,10 @@ class ApiClientService:
             data = response.json()
             detail= data.get("detail")
             if isinstance(detail, dict) and detail.get("captcha_required") is True is True:
-                self.__fetch_captcha_token()
-                return self.login(username, password)
+                if headers is None:
+                    headers = {}
+                headers["X-CAPTCHA-TOKEN"] = self.__fetch_captcha_token()
+                return self.login(username, password, headers)
         return {
             "status_code": response.status_code,
             "content": response.json() if response.content else None,
