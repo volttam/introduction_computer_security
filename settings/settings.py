@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = Field(default=True, alias="RATE_LIMIT_ENABLED")
     user_lockout_enabled: bool = Field(default=True, alias="USER_LOCKOUT_ENABLED")
     captcha_enabled: bool = Field(default=True, alias="CAPTCHA_ENABLED")
+    totp_enabled: bool = Field(default=True, alias="TOTP_ENABLED")
 
     class Config:
         env_file = BASE_DIR / "config" / ".env"

@@ -4,8 +4,12 @@ from models.api_requests.api_requests import *
 from sqlmodel import Session, select
 from models.orm.users import User
 from loggers.logger import logger
+from loggers.attempts_logger import log_login_attempt
 from dependecies import *
-
+import time
+from fastapi import Request, HTTPException
+from fastapi.responses import JSONResponse
+from functools import wraps
 
 app = FastAPI()
 
@@ -14,7 +18,40 @@ def read_root():
     return {"message": "Hello World"}
 
 
+def log_login_attempt_decorator():
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            logger.info("entered decorator")
+            start_time = time.time()
+            payload = kwargs.get("payload")
+            username = getattr(payload, "username", None)
+            try:
+                response = func(*args, **kwargs)
+                latency_ms = (time.time() - start_time) * 1000
+                result = response.get("message")
+                log_login_attempt(
+                    username=username,
+                    protection_flags=ctx.get_protection_flags,
+                    result=result,
+                    latency_ms=latency_ms,
+                )
+                return response
+            except HTTPException as exc:
+                latency_ms = (time.time() - start_time) * 1000
+                log_login_attempt(
+                    username=username,
+                    protection_flags=ctx.get_protection_flags,
+                    result=str(exc.detail),
+                    latency_ms=latency_ms,
+                )
+                raise exc
+        return wrapper
+    return decorator
+
+
 @app.post("/login", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency), Depends(captcha_dependency)])
+@log_login_attempt_decorator()
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
@@ -22,6 +59,8 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    if ctx.settings.totp_enabled:
+        return {"message": "Credentials are valid but totp code is required"}
     return {"message": "Login successful"}
 
 @app.get("/admin/get_captcha_token")
@@ -69,14 +108,10 @@ def register_user(
         "user_id": user.id,
     }
 
-@app.post("/login_totp", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency), Depends(captcha_dependency)])
+@app.post("/login_totp")
+@log_login_attempt_decorator()
 def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
-    if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(payload.password, stored_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     verification = ctx.totp_manager.verify_code(
         secret=user.totp_secret,
         code=payload.totp_code,
