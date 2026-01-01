@@ -1,4 +1,5 @@
 from db_manager import DBManager
+from extra_protections.pepper_manager import PepperManager
 from settings.settings import Settings
 from hashing.passwordHasherSelector import PasswordHasherSelector
 from models.orm.user_handler import UserHandler
@@ -13,12 +14,13 @@ class Context:
         self.settings = Settings()
         self.db_manager = DBManager()
         self.password_hasher_selector = PasswordHasherSelector()
-        self.user_handler = UserHandler(db_manager=self.db_manager)
+        self.user_handler = UserHandler(db_manager=self.db_manager, pepper_enabled=self.settings.pepper_enabled)
         self.file_manager = FileManager()
         self.rate_limiter = RateLimiter(self.settings.rate_limit_enabled)
         self.user_lockout_manager = UserLockoutManager(self.settings.user_lockout_enabled)
         self.captcha_manager = CaptchaManager(self.settings.captcha_enabled)
         self.totp_manager = TOTPManager()
+        self.pepper_manager = PepperManager(pepper_enabled=self.settings.pepper_enabled, pepper_value=self.settings.pepper_value)
 
     @property
     def get_protection_flags(self) -> list[str] | None:
@@ -31,6 +33,8 @@ class Context:
             protection_flags.append("captcha")
         if self.settings.totp_enabled:
             protection_flags.append("totp")
+        if self.settings.pepper_enabled:
+            protection_flags.append("pepper")
         return protection_flags or None
 
 

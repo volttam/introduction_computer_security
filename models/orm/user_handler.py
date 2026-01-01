@@ -5,19 +5,27 @@ from loggers.logger import logger
 
 class UserHandler:
 
-    def __init__(self, db_manager: DBManager):
-        self.db_manager = DBManager()
+    def __init__(self, db_manager: DBManager, pepper_enabled :bool):
+        self.db_manager = db_manager
+        self.pepper_enabled = pepper_enabled
 
-    @staticmethod
-    def get_stored_password_hash(user: User, hashing_mechanism: str) -> str:
+
+    def get_stored_password_hash(self, user: User, hashing_mechanism: str) -> str:
         """
         Return the correct stored password hash for the given hashing mechanism.
         """
-        hash_map = {
-            "sha256": user.sha_256_salt_password_hash,
-            "bcrypt": user.bcrypt_password_hash,
-            "argon2id": user.argon2id_password_hash,
-        }
+        if self.pepper_enabled:
+            hash_map = {
+                "sha256": user.sha_256_salt_password_hash_peppered,
+                "bcrypt": user.bcrypt_password_hash_peppered,
+                "argon2id": user.argon2id_password_hash_peppered,
+            }
+        else:
+            hash_map = {
+                "sha256": user.sha_256_salt_password_hash,
+                "bcrypt": user.bcrypt_password_hash,
+                "argon2id": user.argon2id_password_hash,
+            }
         try:
             return hash_map[hashing_mechanism]
         except KeyError:
