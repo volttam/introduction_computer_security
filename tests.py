@@ -43,20 +43,13 @@ def test_delete_all_users():
     Drop the users table and confirm it no longer exists.
     """
     db = DBManager()
-
     session_gen = db.get_session()
     session = next(session_gen)
-
     try:
-        # Drop the table
         User.__table__.drop(bind=session.get_bind())
-
-        # Verify table is gone
         from sqlalchemy import inspect
         inspector = inspect(session.get_bind())
-
         assert "user" not in inspector.get_table_names()
-
     finally:
         session.close()
 
