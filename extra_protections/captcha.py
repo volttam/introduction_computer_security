@@ -26,15 +26,15 @@ class CaptchaManager:
         if not self.captcha_enabled:
             logger.info("captcha disabled")
             return
-        attempts = self.failed_attempts.get(username, 0)
-        if attempts < self.max_attempts:
-            return
         logger.info(f"captcha token is {captcha_token} and valid tokens are {self.valid_tokens}")
         if captcha_token and captcha_token in self.valid_tokens:
             self.valid_tokens.discard(captcha_token)
             self.failed_attempts[username] = 0
             return
+        attempts = self.failed_attempts.get(username, 0)
         self.register_failure(username)
+        if attempts < self.max_attempts:
+            return
         logger.info(f"failed attempts for {username} are {self.failed_attempts[username]}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
