@@ -10,7 +10,7 @@ class CaptchaManager:
         self.captcha_enabled = captcha_enabled
         self.max_attempts = max_attempts
         self.failed_attempts: dict[str, int] = {}
-        self.valid_tokens: set[str] = set()
+        self.valid_tokens: set = set()
 
     def issue_token(self) -> str:
         """
@@ -24,6 +24,7 @@ class CaptchaManager:
 
     def check_captcha_for_user(self, username: str, captcha_token: str | None):
         if not self.captcha_enabled:
+            logger.info("captcha disabled")
             return
         attempts = self.failed_attempts.get(username, 0)
         if attempts < self.max_attempts:
@@ -33,6 +34,8 @@ class CaptchaManager:
             self.valid_tokens.discard(captcha_token)
             self.failed_attempts[username] = 0
             return
+        self.register_failure(username)
+        logger.info(f"failed attempts for {username} are {self.failed_attempts[username]}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={

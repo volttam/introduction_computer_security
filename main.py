@@ -25,7 +25,6 @@ def log_login_attempt_decorator():
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            logger.info("entered decorator")
             start_time = time.time()
             payload = kwargs.get("payload")
             username = getattr(payload, "username", None)
@@ -52,11 +51,11 @@ def log_login_attempt_decorator():
         return wrapper
     return decorator
 
-
 @app.post("/login")
 @log_login_attempt_decorator()
-def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
-    ctx.api_gateway.activate_gateway(payload)
+def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session), request: Request = None):
+    captcha_token = request.headers.get("X-CAPTCHA-TOKEN") if request else None
+    ctx.api_gateway.activate_gateway(payload=payload,captcha_token=captcha_token)
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

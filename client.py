@@ -66,7 +66,6 @@ class ApiClientService:
             if response.json()["message"] == "Credentials are valid but totp code is required":
                 self.login_totp(username)
         else:
-            logger.info(f"captcha required is {response.json().get("captcha_required")}")
             logger.info(f"response is: {response.json()}")
             data = response.json()
             detail= data.get("detail")

@@ -4,6 +4,10 @@ from extra_protections.rate_limit import RateLimiter
 from extra_protections.user_lockout import UserLockoutManager
 from extra_protections.captcha import CaptchaManager
 from fastapi import Header
+from contextlib import contextmanager
+from typing import Generator
+
+from fastapi import HTTPException, status
 
 logger = get_logger(__name__)
 
@@ -14,11 +18,11 @@ class ApiGateWay:
         self.captcha_manager = captcha_manager
         self.user_lockout_manager = user_lockout_manager
 
-    def activate_gateway(self, payload: LoginRequest):
-        self.__rate_limit_login_dependency(payload)
-        self.__captcha_dependency(payload)
-        self.__user_lockout_dependency(payload)
 
+    def activate_gateway(self, payload: LoginRequest, captcha_token: str | None):
+        self.__rate_limit_login_dependency(payload)
+        self.__captcha_dependency(payload, captcha_token)
+        self.__user_lockout_dependency(payload)
 
     def __rate_limit_login_dependency(self, payload: LoginRequest) -> None:
         """
@@ -41,16 +45,8 @@ class ApiGateWay:
 
     def __captcha_dependency(self,
         payload: LoginRequest,
-        captcha_token: str | None = Header(default=None, alias="X-CAPTCHA-TOKEN"),
+        captcha_token: str | None
     ):
-        logger.info(f"Captcha token in depedency is {captcha_token}")
+        logger.info("Captcha dependency")
         self.captcha_manager.check_captcha_for_user(payload.username, captcha_token)
-        try:
-            yield
-        except Exception:
-            self.captcha_manager.register_failure(payload.username)
-            raise
-        else:
-            logger.info(f"reset captcha username {payload.username}")
-            self.captcha_manager.reset(payload.username)
 
