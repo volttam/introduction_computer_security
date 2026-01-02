@@ -12,9 +12,8 @@ def password_spraying():
     for user in users:
         for password in passwords:
             results = client_service.login(username=user.username, password=password)
-            # if login successful then go to the next user
             if results["status_code"] == 200:
-                break
+                return
 
 
 

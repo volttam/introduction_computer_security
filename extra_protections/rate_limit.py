@@ -9,7 +9,7 @@ class RateLimiter:
         self,
         rate_limit_enabled: bool,
         max_attempts: int = 10,
-        window_seconds: int = 3600,  # 1 hour
+        window_seconds: int = 60,
     ):
         self.rate_limit_enabled = rate_limit_enabled
         self.max_attempts = max_attempts

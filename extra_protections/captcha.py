@@ -6,8 +6,8 @@ from loggers.logger import get_logger
 logger = get_logger(__name__)
 
 class CaptchaManager:
-    def __init__(self, enabled: bool, max_attempts: int = 10):
-        self.captcha_enabled = enabled
+    def __init__(self, captcha_enabled: bool, max_attempts: int = 10):
+        self.captcha_enabled = captcha_enabled
         self.max_attempts = max_attempts
         self.failed_attempts: dict[str, int] = {}
         self.valid_tokens: set[str] = set()

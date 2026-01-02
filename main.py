@@ -5,13 +5,16 @@ from sqlmodel import Session, select
 from models.orm.users import User
 from loggers.logger import logger
 from loggers.attempts_logger import log_login_attempt
-from dependecies import *
+from api_gateway import *
 import time
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 from functools import wraps
+from starlette.middleware.base import BaseHTTPMiddleware
+from context import ctx
 
 app = FastAPI()
+
 
 @app.get("/")
 def read_root():
@@ -50,9 +53,10 @@ def log_login_attempt_decorator():
     return decorator
 
 
-@app.post("/login", dependencies=[Depends(rate_limit_login_dependency), Depends(user_lockout_dependency), Depends(captcha_dependency)])
+@app.post("/login")
 @log_login_attempt_decorator()
 def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
+    ctx.api_gateway.activate_gateway(payload)
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -110,7 +114,7 @@ def register_user(
     }
 
 @app.post("/login_totp")
-@log_login_attempt_decorator()
+#@log_login_attempt_decorator()
 def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     verification = ctx.totp_manager.verify_code(

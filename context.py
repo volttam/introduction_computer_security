@@ -8,6 +8,7 @@ from extra_protections.rate_limit import RateLimiter
 from extra_protections.user_lockout import UserLockoutManager
 from extra_protections.captcha import CaptchaManager
 from extra_protections.totp import TOTPManager
+from api_gateway import ApiGateWay
 
 class Context:
     def __init__(self):
@@ -21,6 +22,8 @@ class Context:
         self.captcha_manager = CaptchaManager(self.settings.captcha_enabled)
         self.totp_manager = TOTPManager()
         self.pepper_manager = PepperManager(pepper_enabled=self.settings.pepper_enabled, pepper_value=self.settings.pepper_value)
+        self.api_gateway = ApiGateWay(rate_limiter=self.rate_limiter, captcha_manager=self.captcha_manager, user_lockout_manager=self.user_lockout_manager)
+
 
     @property
     def get_protection_flags(self) -> list[str] | None:

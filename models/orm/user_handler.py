@@ -39,6 +39,7 @@ class UserHandler:
         :return:
         """
         session = self.db_manager.get_session()
+        session = next(session)
         query = select(User)
         results = session.exec(query)
         users = []
