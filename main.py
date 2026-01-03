@@ -113,7 +113,7 @@ def register_user(
     }
 
 @app.post("/login_totp")
-#@log_login_attempt_decorator()
+@log_login_attempt_decorator()
 def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
     verification = ctx.totp_manager.verify_code(

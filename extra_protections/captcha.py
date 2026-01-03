@@ -29,7 +29,7 @@ class CaptchaManager:
         logger.info(f"captcha token is {captcha_token} and valid tokens are {self.valid_tokens}")
         if captcha_token and captcha_token in self.valid_tokens:
             self.valid_tokens.discard(captcha_token)
-            self.failed_attempts[username] = 0
+            self.reset(username)
             return
         attempts = self.failed_attempts.get(username, 0)
         self.register_failure(username)
