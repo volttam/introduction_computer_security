@@ -16,7 +16,6 @@ class Context:
         self.db_manager = DBManager()
         self.password_hasher_selector = PasswordHasherSelector()
         self.user_handler = UserHandler(db_manager=self.db_manager, pepper_enabled=self.settings.pepper_enabled)
-        self.file_manager = FileManager()
         self.rate_limiter = RateLimiter(self.settings.rate_limit_enabled)
         self.user_lockout_manager = UserLockoutManager(self.settings.user_lockout_enabled)
         self.captcha_manager = CaptchaManager(self.settings.captcha_enabled)

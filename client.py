@@ -16,7 +16,7 @@ class ApiClientService:
 
     def __init__(self,
         seed_group: str,
-        base_url: str = "http://127.0.0.1:8001",
+        base_url: str = "http://127.0.0.1:8000",
         timeout: float = 6.0,
         totp_period: int = 30,
         totp_digits: int = 6

@@ -2,12 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-import base64
-import hmac
-import hashlib
-import os
 import time
-import urllib.parse
+
+import pyotp
 
 from loggers.logger import get_logger
 
@@ -15,7 +12,7 @@ logger = get_logger(__name__)
 
 
 @dataclass
-class TOTPVerificationResult:
+class TOTPCheckResult:
     success: bool
     reason: str | None
     timecode: int | None
@@ -23,94 +20,100 @@ class TOTPVerificationResult:
 
 class TOTPManager:
     """
-    Handles TOTP generation and verification for the login_totp endpoint.
+    Handles TOTP generation and verification for the login_totp endpoint
     """
 
     def __init__(
         self,
-        period: int = 30,
-        digits: int = 6,
-        valid_window_steps: int = 1,
+        interval_seconds: int = 30,
+        code_digits: int = 6,
+        window: int = 1,
     ) -> None:
-        self.period = period
-        self.digits = digits
-        self.valid_window_steps = valid_window_steps
+        self.interval = interval_seconds
+        self.digits = code_digits
+        self.window = window
 
-    def generate_secret(self) -> str:
-        secret = base64.b32encode(os.urandom(20)).decode("utf-8").rstrip("=")
-        logger.info("Generated new TOTP secret")
+    def create_secret(self) -> str:
+        secret = pyotp.random_base32()
+        logger.info("Created TOTP secret for user")
         return secret
 
-    def _decode_secret(self, secret: str) -> bytes:
-        padding = "=" * (-len(secret) % 8)
-        return base64.b32decode(secret + padding, casefold=True)
+    def _build_totp(self, secret: str) -> pyotp.TOTP:
+        return pyotp.TOTP(
+            secret,
+            interval=self.interval,
+            digits=self.digits,
+        )
 
-    def _timecode(self, timestamp: float) -> int:
-        return int(timestamp // self.period)
+    def _step_from_ts(self, ts: float) -> int:
+        return int(ts // self.interval)
 
-    def _hotp(self, secret: bytes, counter: int) -> str:
-        counter_bytes = counter.to_bytes(8, "big")
-        hmac_digest = hmac.new(secret, counter_bytes, hashlib.sha1).digest()
-        offset = hmac_digest[-1] & 0x0F
-        code_int = (
-            int.from_bytes(hmac_digest[offset : offset + 4], "big") & 0x7FFFFFFF
-        ) % (10**self.digits)
-        return str(code_int).zfill(self.digits)
+    def _step_from_datetime(self, dt: datetime) -> int:
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return self._step_from_ts(dt.timestamp())
 
-    def generate_current_code(self, secret: str, for_time: float | None = None) -> str:
-        now = for_time if for_time is not None else time.time()
-        secret_bytes = self._decode_secret(secret)
-        return self._hotp(secret_bytes, self._timecode(now))
+    def generate_code(
+        self,
+        secret: str,
+        ts: float | None = None,
+    ) -> str:
+        totp = self._build_totp(secret)
+        now = ts if ts is not None else time.time()
+        return totp.at(now)
 
-    def _timecode_from_datetime(self, value: datetime) -> int:
-        aware_dt = value
-        if value.tzinfo is None:
-            aware_dt = value.replace(tzinfo=timezone.utc)
-        return self._timecode(aware_dt.timestamp())
-
-    def verify_code(
+    def validate_code(
         self,
         secret: str,
         code: str,
-        last_verified_at: datetime | None,
-    ) -> TOTPVerificationResult:
-        """
-        Verify a TOTP code
-        """
-        secret_bytes = self._decode_secret(secret)
-        current_timecode = self._timecode(time.time())
-        last_timecode = None
-        if last_verified_at is not None:
-            last_timecode = self._timecode_from_datetime(last_verified_at)
+        last_used_at: datetime | None,
+    ) -> TotpCheckResult:
+        totp = self._build_totp(secret)
+        now_ts = time.time()
+        current_step = self._step_from_ts(now_ts)
 
-        for offset in range(-self.valid_window_steps, self.valid_window_steps + 1):
-            candidate_timecode = current_timecode + offset
-            if candidate_timecode < 0:
+        last_step = None
+        if last_used_at is not None:
+            last_step = self._step_from_datetime(last_used_at)
+
+        for shift in range(-self.window, self.window + 1):
+            step = current_step + shift
+            if step < 0:
                 continue
-            expected_code = self._hotp(secret_bytes, candidate_timecode)
-            if expected_code == code:
-                if last_timecode is not None and candidate_timecode == last_timecode:
-                    logger.warning("Rejected reused TOTP code at the same time step")
-                    return TOTPVerificationResult(
-                        success=False,
-                        reason="TOTP code already used recently",
-                        timecode=candidate_timecode,
-                    )
-                return TOTPVerificationResult(
-                    success=True,
-                    reason=None,
-                    timecode=candidate_timecode,
+
+            step_ts = step * self.interval
+            is_valid = totp.verify(
+                code,
+                for_time=step_ts,
+                valid_window=0,
+            )
+
+            if not is_valid:
+                continue
+
+            if last_step is not None and step == last_step:
+                logger.warning("TOTP reuse detected for same time window")
+                return TotpCheckResult(
+                    ok=False,
+                    error="Code was already used",
+                    step=step,
                 )
 
-        logger.warning("Invalid or expired TOTP code")
-        return TOTPVerificationResult(
-            success=False,
-            reason="Invalid or expired TOTP code",
-            timecode=current_timecode,
+            return TotpCheckResult(
+                ok=True,
+                error=None,
+                step=step,
+            )
+
+        logger.warning("Invalid or expired TOTP")
+        return TotpCheckResult(
+            ok=False,
+            error="Invalid or expired TOTP code",
+            step=current_step,
         )
 
-    def timestamp_from_timecode(self, timecode: int) -> datetime:
-        """
-        Convert a timecode (TOTP step) back to a UTC datetime
-        """
-        return datetime.fromtimestamp(timecode * self.period, tz=timezone.utc)
+    def datetime_from_step(self, step: int) -> datetime:
+        return datetime.fromtimestamp(
+            step * self.interval,
+            tz=timezone.utc,
+        )
