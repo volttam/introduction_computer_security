@@ -1,5 +1,5 @@
-from db_manager import DBManager
-from models.orm.users import User
+from server.db_manager import DBManager
+from server.models.orm.users import User
 from sqlmodel import select
 from loggers.logger import logger
 

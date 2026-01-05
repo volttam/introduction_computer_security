@@ -1,8 +1,8 @@
 
-from hashing.argon2id_hashing import PasswordArgon2idHasher
-from hashing.bcrypt_hashing import PasswordBcryptHasher
-from hashing.sha256_hashing import PasswordSHA256Hasher
-from hashing.password_hasher import PasswordHasher
+from server.hashing.argon2id_hashing import PasswordArgon2idHasher
+from server.hashing.bcrypt_hashing import PasswordBcryptHasher
+from server.hashing.sha256_hashing import PasswordSHA256Hasher
+from server.hashing.password_hasher import PasswordHasher
 from loggers.logger import logger
 
 class PasswordHasherSelector:

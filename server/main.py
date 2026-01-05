@@ -1,17 +1,13 @@
 
-from fastapi import Depends, FastAPI, HTTPException, status
-from models.api_requests.api_requests import *
+from fastapi import Depends, FastAPI, status
 from sqlmodel import Session, select
-from models.orm.users import User
-from loggers.logger import logger
-from loggers.attempts_logger import log_login_attempt
-from api_gateway import *
+from server.models.orm.users import User
+from server.models.api_requests.api_requests import *
+from server.attempts_logger import log_login_attempt
 import time
 from fastapi import Request, HTTPException
-from fastapi.responses import JSONResponse
 from functools import wraps
-from starlette.middleware.base import BaseHTTPMiddleware
-from context import ctx
+from server.context import ctx
 
 app = FastAPI()
 

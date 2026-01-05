@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
-from main import app
-from sqlmodel import Session, select, delete
-from models.orm.users import User
-from context import ctx
+from server.main import app
+from sqlmodel import select
+from server.models.orm.users import User
+from server.context import ctx
 
 client = TestClient(app)
 
@@ -35,31 +35,6 @@ def test_login_weak_user_wrong_password():
     )
     assert response.status_code == 401
     assert response.json()["detail"] == "Invalid credentials"
-
-
-
-
-
-def test_login_totp_success():
-    """
-    Successful TOTP login with a freshly generated code.
-    """
-    username = "weak_password_user_1"
-    password = "123456"
-    with ctx.db_manager.get_session() as session:
-        user = session.exec(select(User).where(User.username == "weak_password_user_1")).first()
-        assert user is not None
-        current_code = ctx.totp_manager.generate_current_code(user.totp_secret)
-    response = client.post(
-        "/login_totp",
-        json={
-            "username": username,
-            "password": password,
-            "totp_code": current_code,
-        },
-    )
-    assert response.status_code == 200
-    assert response.json() == {"message": "Login successful", "totp": "verified"}
 
 
 

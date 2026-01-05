@@ -1,13 +1,8 @@
-from models.api_requests.api_requests import LoginRequest
+from server.models.api_requests.api_requests import LoginRequest
 from loggers.logger import get_logger
-from extra_protections.rate_limit import RateLimiter
-from extra_protections.user_lockout import UserLockoutManager
-from extra_protections.captcha import CaptchaManager
-from fastapi import Header
-from contextlib import contextmanager
-from typing import Generator
-
-from fastapi import HTTPException, status
+from server.extra_protections.rate_limit import RateLimiter
+from server.extra_protections.user_lockout import UserLockoutManager
+from server.extra_protections.captcha import CaptchaManager
 
 logger = get_logger(__name__)
 

@@ -1,14 +1,13 @@
-from db_manager import DBManager
-from extra_protections.pepper_manager import PepperManager
-from settings.settings import Settings
-from hashing.passwordHasherSelector import PasswordHasherSelector
-from models.orm.user_handler import UserHandler
-from file_managers.file_manager import FileManager
-from extra_protections.rate_limit import RateLimiter
-from extra_protections.user_lockout import UserLockoutManager
-from extra_protections.captcha import CaptchaManager
-from extra_protections.totp import TOTPManager
-from api_gateway import ApiGateWay
+from server.db_manager import DBManager
+from server.extra_protections.pepper_manager import PepperManager
+from server.settings.settings import Settings
+from server.hashing.passwordHasherSelector import PasswordHasherSelector
+from server.models.orm.user_handler import UserHandler
+from server.extra_protections.rate_limit import RateLimiter
+from server.extra_protections.user_lockout import UserLockoutManager
+from server.extra_protections.captcha import CaptchaManager
+from server.extra_protections.totp import TOTPManager
+from server.api_gateway import ApiGateWay
 
 class Context:
     def __init__(self):

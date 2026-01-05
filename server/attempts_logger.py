@@ -1,12 +1,16 @@
 import logging
 import json
 import time
-from context import ctx
+from server.context import ctx
 from loggers.logger import logger
+from pathlib import Path
+
+LOG_DIR = Path(__file__).resolve().parent
+ATTEMPTS_LOG_PATH = (LOG_DIR / "attempts.log").resolve()
 
 attempts_logger = logging.getLogger("auth_attempts")
 attempts_logger.setLevel(logging.INFO)
-handler = logging.FileHandler("attempts.log")
+handler = logging.FileHandler(ATTEMPTS_LOG_PATH)
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter("%(message)s")
 handler.setFormatter(formatter)

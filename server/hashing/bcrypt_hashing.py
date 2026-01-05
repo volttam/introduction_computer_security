@@ -1,5 +1,5 @@
 import bcrypt
-from hashing.password_hasher import PasswordHasher
+from server.hashing.password_hasher import PasswordHasher
 from loggers.logger import logger
 
 class PasswordBcryptHasher(PasswordHasher):
