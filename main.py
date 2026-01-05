@@ -59,7 +59,7 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     user = session.exec(select(User).where(User.username == payload.username)).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    password = ctx.pepper_manager.apply_pepper_if_activated(payload.password)
+    password = ctx.pepper_manager.get_peppered_password_if_enabled(payload.password)
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
@@ -92,17 +92,25 @@ def register_user(
             status_code=status.HTTP_409_CONFLICT,
             detail="Username or email already exists",
         )
-    sha256_result = ctx.password_hasher_selector.sha256_hasher.hash_password(payload.password)
+    peppered_password = ctx.pepper_manager.get_peppered_password(payload.password)
+    sha256_result = ctx.password_hasher_selector.sha256_hasher.hash_password(peppered_password)
+    sha256_result_peppered = ctx.password_hasher_selector.sha256_hasher.hash_password(payload.password)
     sha256_stored = f"{sha256_result.salt}${sha256_result.hash}"
+    sha256_stored_peppered = f"{sha256_result.salt}${sha256_result_peppered.hash}"
     bcrypt_hash = ctx.password_hasher_selector.bcrypt_hasher.hash_password(payload.password)
+    bcrypt_hash_peppered = ctx.password_hasher_selector.bcrypt_hasher.hash_password(peppered_password)
     argon2id_hash = ctx.password_hasher_selector.argon2id_hasher.hash_password(payload.password)
-    totp_secret = ctx.totp_manager.generate_secret()
+    argon2id_hash_peppered = ctx.password_hasher_selector.argon2id_hasher.hash_password(peppered_password)
+    totp_secret = ctx.totp_manager.create_secret()
     user = User(
         username=payload.username,
         email=payload.email,
         sha_256_salt_password_hash=sha256_stored,
+        sha_256_salt_password_hash_peppered = sha256_stored_peppered,
         bcrypt_password_hash=bcrypt_hash,
+        bcrypt_password_hash_peppered = bcrypt_hash_peppered,
         argon2id_password_hash=argon2id_hash,
+        argon2id_password_hash_peppered = argon2id_hash_peppered,
         totp_secret=totp_secret
     )
     session.add(user)
