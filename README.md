@@ -38,16 +38,16 @@ pip install -r requirements.txt
 
 Runtime options are loaded from environment variables (or a `.env` file at `config/.env`). Defaults shown below match `settings/settings.py`:
 
-| Variable | Default | Description |
-| --- | --- | --- |
+| Variable | Default | Description                                              |
+| --- | --- |----------------------------------------------------------|
 | `HASH_MODE` | `sha256` | Active password hasher (`argon2id`, `bcrypt`, `sha256`). |
-| `RATE_LIMIT_ENABLED` | `true` | Enable per-user request limiting. |
-| `USER_LOCKOUT_ENABLED` | `true` | Lock accounts after repeated failures. |
-| `CAPTCHA_ENABLED` | `true` | Require CAPTCHA after too many misses. |
-| `TOTP_ENABLED` | `true` | Enforce second factor on login. |
-| `PEPPER_ENABLED` | `true` | Append a server-side pepper to passwords. |
-| `PEPPER_VALUE` | _unset_ | Pepper string applied when `PEPPER_ENABLED` is true. |
-| `SEED_GROUP` | `0x039C76D` | Shared secret used to request CAPTCHA tokens. |
+| `RATE_LIMIT_ENABLED` | `true` | Enable per-user request limiting.                        |
+| `USER_LOCKOUT_ENABLED` | `true` | Lock accounts after repeated failures.                   |
+| `CAPTCHA_ENABLED` | `true` | Require CAPTCHA after too many misses.                   |
+| `TOTP_ENABLED` | `true` | Enforce second factor on login.                          |
+| `PEPPER_ENABLED` | `true` | Append a server-side pepper to passwords.                |
+| `PEPPER_VALUE` | _unset_ | Pepper string applied when `PEPPER_ENABLED` is true.     |
+| `SEED_GROUP` | `0x039C76D` | team's seed group.                                       |
 
 Create the `config/.env` file as needed:
 
@@ -82,6 +82,7 @@ SQLite data is stored in `data.db` at the repository rooty
 | `POST /login` | Password verification | Honors the active hash mode, rate limiting, lockout, CAPTCHA, and pepper. On success with TOTP enabled, returns a prompt to supply a code.
 | `POST /login_totp` | TOTP verification | Confirms a TOTP code for a user and updates the last verification timestamp. 【main.py†L115-L133】 |
 | `GET /admin/get_captcha_token` | Issue a CAPTCHA token | Requires a matching `group_seed` query parameter. Pass the returned token via `X-CAPTCHA-TOKEN` header on `/login`.
+| `DELETE /users/{username}` | Remove a user | Useful for cleaning up seeded accounts between runs
 
 Example login call with a CAPTCHA token:
 
