@@ -37,3 +37,6 @@ class RateLimiter:
             )
         valid_attempts.append(now)
         self.attempts_per_user[username] = valid_attempts
+
+    def reset_user(self, username: str) -> None:
+        self.attempts_per_user.pop(username, None)

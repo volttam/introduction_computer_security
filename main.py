@@ -63,6 +63,7 @@ def login_user(payload: LoginRequest, session: Session = Depends(ctx.db_manager.
     stored_hash = ctx.user_handler.get_stored_password_hash(user, ctx.settings.hash_mode)
     if not ctx.password_hasher_selector.get_password_hasher(ctx.settings.hash_mode).verify_password(password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    ctx.api_gateway.reset_user(payload=payload,)
     if ctx.settings.totp_enabled:
         return {"message": "Credentials are valid but totp code is required"}
     return {"message": "Login successful"}
@@ -116,10 +117,10 @@ def register_user(
 @log_login_attempt_decorator()
 def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
     user = session.exec(select(User).where(User.username == payload.username)).first()
-    verification = ctx.totp_manager.verify_code(
+    verification = ctx.totp_manager.validate_code(
         secret=user.totp_secret,
         code=payload.totp_code,
-        last_verified_at=user.totp_last_verified_at,
+        last_used_at=user.totp_last_verified_at,
     )
     if not verification.success:
         raise HTTPException(

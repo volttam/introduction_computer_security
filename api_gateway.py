@@ -19,34 +19,16 @@ class ApiGateWay:
         self.user_lockout_manager = user_lockout_manager
 
 
-    def activate_gateway(self, payload: LoginRequest, captcha_token: str | None):
-        self.__rate_limit_login_dependency(payload)
-        self.__captcha_dependency(payload, captcha_token)
-        self.__user_lockout_dependency(payload)
-
-    def __rate_limit_login_dependency(self, payload: LoginRequest) -> None:
-        """
-        rate_limit_login_dependency
-        :param payload:
-        :return:
-        """
-        logger.info("Rate limit login dependency")
-        self.rate_limiter.check_requests_per_user(payload.username)
-
-    def __user_lockout_dependency(self, payload: LoginRequest) -> None:
-        """
-        user_lockout_dependency
-        :param payload:
-        :return:
-        """
-        logger.info("User lockout dependency")
+    def activate_gateway(self, payload: LoginRequest, captcha_token: str | None) -> None:
         self.user_lockout_manager.check_user_lockout(payload.username)
-
-
-    def __captcha_dependency(self,
-        payload: LoginRequest,
-        captcha_token: str | None
-    ):
-        logger.info("Captcha dependency")
+        self.rate_limiter.check_requests_per_user(payload.username)
         self.captcha_manager.check_captcha_for_user(payload.username, captcha_token)
+
+
+    def reset_user(self, payload: LoginRequest) -> None:
+        self.user_lockout_manager.reset_user(payload.username)
+        self.rate_limiter.reset_user(payload.username)
+        self.captcha_manager.reset_user(payload.username)
+
+
 

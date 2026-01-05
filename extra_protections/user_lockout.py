@@ -7,7 +7,7 @@ class UserLockoutManager:
     def __init__(
         self,
         lockout_enabled: bool,
-        max_attempts: int = 10,
+        max_attempts: int = 20,
     ):
         self.lockout_enabled = lockout_enabled
         self.max_attempts = max_attempts
@@ -36,3 +36,6 @@ class UserLockoutManager:
                 status_code=status.HTTP_423_LOCKED,
                 detail="Account locked due to too many failed login attempts",
             )
+
+    def reset_user(self, username: str) -> None:
+        self.failed_attempts.pop(username, None)

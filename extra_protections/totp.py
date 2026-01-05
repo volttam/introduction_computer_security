@@ -23,12 +23,7 @@ class TOTPManager:
     Handles TOTP generation and verification for the login_totp endpoint
     """
 
-    def __init__(
-        self,
-        interval_seconds: int = 30,
-        code_digits: int = 6,
-        window: int = 1,
-    ) -> None:
+    def __init__(self, interval_seconds: int = 30, code_digits: int = 6, window: int = 1) -> None:
         self.interval = interval_seconds
         self.digits = code_digits
         self.window = window
@@ -39,11 +34,7 @@ class TOTPManager:
         return secret
 
     def _build_totp(self, secret: str) -> pyotp.TOTP:
-        return pyotp.TOTP(
-            secret,
-            interval=self.interval,
-            digits=self.digits,
-        )
+        return pyotp.TOTP(secret, interval=self.interval, digits=self.digits)
 
     def _step_from_ts(self, ts: float) -> int:
         return int(ts // self.interval)
@@ -53,67 +44,32 @@ class TOTPManager:
             dt = dt.replace(tzinfo=timezone.utc)
         return self._step_from_ts(dt.timestamp())
 
-    def generate_code(
-        self,
-        secret: str,
-        ts: float | None = None,
-    ) -> str:
+    def generate_code(self, secret: str, ts: float | None = None) -> str:
         totp = self._build_totp(secret)
         now = ts if ts is not None else time.time()
         return totp.at(now)
 
-    def validate_code(
-        self,
-        secret: str,
-        code: str,
-        last_used_at: datetime | None,
-    ) -> TotpCheckResult:
+    def validate_code(self, secret: str,code: str, last_used_at: datetime | None) -> TOTPCheckResult:
         totp = self._build_totp(secret)
         now_ts = time.time()
         current_step = self._step_from_ts(now_ts)
-
         last_step = None
         if last_used_at is not None:
             last_step = self._step_from_datetime(last_used_at)
-
         for shift in range(-self.window, self.window + 1):
             step = current_step + shift
             if step < 0:
                 continue
-
             step_ts = step * self.interval
-            is_valid = totp.verify(
-                code,
-                for_time=step_ts,
-                valid_window=0,
-            )
-
+            is_valid = totp.verify(code, for_time=step_ts, valid_window=0)
             if not is_valid:
                 continue
-
             if last_step is not None and step == last_step:
                 logger.warning("TOTP reuse detected for same time window")
-                return TotpCheckResult(
-                    ok=False,
-                    error="Code was already used",
-                    step=step,
-                )
-
-            return TotpCheckResult(
-                ok=True,
-                error=None,
-                step=step,
-            )
-
+                return TOTPCheckResult(success=False, reason="Code was already used", timecode=step)
+            return TOTPCheckResult(success=True, reason=None, timecode=step)
         logger.warning("Invalid or expired TOTP")
-        return TotpCheckResult(
-            ok=False,
-            error="Invalid or expired TOTP code",
-            step=current_step,
-        )
+        return TOTPCheckResult(success=False, reason="Invalid or expired TOTP code", timecode=current_step,)
 
     def datetime_from_step(self, step: int) -> datetime:
-        return datetime.fromtimestamp(
-            step * self.interval,
-            tz=timezone.utc,
-        )
+        return datetime.fromtimestamp(step * self.interval, tz=timezone.utc,)
