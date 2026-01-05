@@ -121,6 +121,17 @@ def register_user(
         "user_id": user.id,
     }
 
+@app.delete("/users/{username}", status_code=status.HTTP_200_OK)
+def delete_user(username: str, session: Session = Depends(ctx.db_manager.get_session)):
+    user = session.exec(select(User).where(User.username == username)).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    session.delete(user)
+    session.commit()
+    return {"detail": "User deleted successfully"}
+
 @app.post("/login_totp")
 @log_login_attempt_decorator()
 def login_totp(payload: TOTPLoginRequest, session: Session = Depends(ctx.db_manager.get_session)):
