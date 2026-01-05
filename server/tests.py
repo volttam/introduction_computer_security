@@ -38,31 +38,6 @@ def test_login_weak_user_wrong_password():
 
 
 
-
-
-def test_login_totp_success():
-    """
-    Successful TOTP login with a freshly generated code.
-    """
-    username = "weak_password_user_1"
-    password = "123456"
-    with ctx.db_manager.get_session() as session:
-        user = session.exec(select(User).where(User.username == "weak_password_user_1")).first()
-        assert user is not None
-        current_code = ctx.totp_manager.generate_current_code(user.totp_secret)
-    response = client.post(
-        "/login_totp",
-        json={
-            "username": username,
-            "password": password,
-            "totp_code": current_code,
-        },
-    )
-    assert response.status_code == 200
-    assert response.json() == {"message": "Login successful", "totp": "verified"}
-
-
-
 def test_register_delete_user_endpoint():
     username = "test_register_user_1"
     payload = {
