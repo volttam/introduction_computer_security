@@ -68,7 +68,7 @@ EOF
 ### Running the API
 
 ```bash
-uvicorn main:app --reload
+uvicorn server.main:app --reload
 ```
 
 SQLite data is stored in `data.db` at the repository rooty
