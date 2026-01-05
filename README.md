@@ -6,8 +6,8 @@ A FastAPI-based authentication service that demonstrates common hardening techni
 
 - **Multiple hashing strategies:** Select SHA-256, bcrypt, or Argon2id at runtime.
 - **Defense in depth:** Rate limiting, user lockout, CAPTCHA enforcement, TOTP verification, and optional password peppering are all configurable.
-- **Audit-friendly logging:** Every login attempt is recorded to `attempts.log` with timing, protection flags, and outcomes. 【loggers/attempts_logger.py†L1-L36】
-- **SQLite-backed user store:** SQLModel models backed by a local SQLite database created automatically on startup. 【db_manager.py†L10-L38】
+- **Audit-friendly logging:** Every login attempt is recorded to `attempts.log` with timing, protection flags, and outcomes.
+- **SQLite-backed user store:** SQLModel models backed by a local SQLite database created automatically on startup.
 
 ## Project layout
 
