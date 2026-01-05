@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
-from main import app
-from sqlmodel import Session, select, delete
-from models.orm.users import User
-from context import ctx
+from server.main import app
+from sqlmodel import select
+from server.models.orm.users import User
+from server.context import ctx
 
 client = TestClient(app)
 

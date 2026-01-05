@@ -1,11 +1,9 @@
 import httpx
-import time
 from loggers.logger import get_logger
 from pathlib import Path
-import json
-from extra_protections.totp import TOTPManager
+
 logger = get_logger(__name__)
-from loggers.attempts_logger import log_login_attempt
+
 
 class ApiClientService:
     """

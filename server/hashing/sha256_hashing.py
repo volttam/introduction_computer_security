@@ -1,7 +1,7 @@
 import hashlib
 import secrets
 from dataclasses import dataclass
-from hashing.password_hasher import PasswordHasher
+from server.hashing.password_hasher import PasswordHasher
 from loggers.logger import logger
 
 @dataclass(frozen=True)

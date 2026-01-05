@@ -1,7 +1,7 @@
-from file_managers.file_manager import FileManager
+from client.file_managers.file_manager import FileManager
 from loggers.logger import logger
-from client import ApiClientService
-from context import ctx
+from client.client import ApiClientService
+from server.context import ctx
 import time
 
 USER_NAME_WEAK_PASSWORD_9 = "weak_password_user_9"

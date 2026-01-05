@@ -1,6 +1,6 @@
-from context import ctx
-from client import ApiClientService
-from file_managers.file_manager import FileManager
+from server.context import ctx
+from client.client import ApiClientService
+from client.file_managers.file_manager import FileManager
 
 
 
