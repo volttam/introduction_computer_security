@@ -16,7 +16,7 @@ class ApiClientService:
 
     def __init__(self,
         seed_group: str,
-        base_url: str = "http://127.0.0.1:8001",
+        base_url: str = "http://127.0.0.1:8000",
         timeout: float = 6.0,
         totp_period: int = 30,
         totp_digits: int = 6
@@ -66,7 +66,6 @@ class ApiClientService:
             if response.json()["message"] == "Credentials are valid but totp code is required":
                 self.login_totp(username)
         else:
-            logger.info(f"captcha required is {response.json().get("captcha_required")}")
             logger.info(f"response is: {response.json()}")
             data = response.json()
             detail= data.get("detail")

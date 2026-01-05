@@ -6,11 +6,11 @@ from loggers.logger import get_logger
 logger = get_logger(__name__)
 
 class CaptchaManager:
-    def __init__(self, enabled: bool, max_attempts: int = 10):
-        self.captcha_enabled = enabled
+    def __init__(self, captcha_enabled: bool, max_attempts: int = 10):
+        self.captcha_enabled = captcha_enabled
         self.max_attempts = max_attempts
         self.failed_attempts: dict[str, int] = {}
-        self.valid_tokens: set[str] = set()
+        self.valid_tokens: set = set()
 
     def issue_token(self) -> str:
         """
@@ -24,15 +24,18 @@ class CaptchaManager:
 
     def check_captcha_for_user(self, username: str, captcha_token: str | None):
         if not self.captcha_enabled:
-            return
-        attempts = self.failed_attempts.get(username, 0)
-        if attempts < self.max_attempts:
+            logger.info("captcha disabled")
             return
         logger.info(f"captcha token is {captcha_token} and valid tokens are {self.valid_tokens}")
         if captcha_token and captcha_token in self.valid_tokens:
             self.valid_tokens.discard(captcha_token)
-            self.failed_attempts[username] = 0
+            self.reset_user(username)
             return
+        attempts = self.failed_attempts.get(username, 0)
+        self.register_failure(username)
+        if attempts < self.max_attempts:
+            return
+        logger.info(f"failed attempts for {username} are {self.failed_attempts[username]}")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
@@ -48,7 +51,7 @@ class CaptchaManager:
         """
         self.failed_attempts[username] = self.failed_attempts.get(username, 0) + 1
 
-    def reset(self, username: str):
+    def reset_user(self, username: str) -> None:
         """
         Resets the captcha
         :param username:

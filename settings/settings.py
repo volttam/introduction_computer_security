@@ -1,6 +1,4 @@
-# settings.py
 from pydantic_settings import BaseSettings
-from pydantic import Field
 from typing import Literal
 from pathlib import Path
 from pydantic import Field

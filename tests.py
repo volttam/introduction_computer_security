@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 from main import app
 from sqlmodel import Session, select, delete
 from models.orm.users import User
-from db_manager import DBManager
 from context import ctx
 
 client = TestClient(app)
@@ -38,21 +37,6 @@ def test_login_weak_user_wrong_password():
     assert response.json()["detail"] == "Invalid credentials"
 
 
-def test_delete_all_users():
-    """
-    Drop the users table and confirm it no longer exists.
-    """
-    db = DBManager()
-    session_gen = db.get_session()
-    session = next(session_gen)
-    try:
-        User.__table__.drop(bind=session.get_bind())
-        from sqlalchemy import inspect
-        inspector = inspect(session.get_bind())
-        assert "user" not in inspector.get_table_names()
-    finally:
-        session.close()
-
 
 
 
@@ -77,27 +61,21 @@ def test_login_totp_success():
     assert response.status_code == 200
     assert response.json() == {"message": "Login successful", "totp": "verified"}
 
-"""
-def test_register_user_success():
-    payload = {
-        "username": "test_register_user_1",
-        "email": "test_register_user_1@example.com",
-        "password": "TestPassword123",
-    }
-    response = client.post("/register", json=payload)
-    assert response.status_code == 201
-    assert response.json()["message"] == "User registered successfully"
-    assert "user_id" in response.json()
-    db = DBManager()
-    with next(db.get_session()) as session:
-        user = session.exec(
-            select(User).where(User.username == payload["username"])
-        ).first()
-        assert user is not None
-        assert user.email == payload["email"]
-        assert user.sha_256_salt_password_hash is not None
-        assert "$" in user.sha_256_salt_password_hash
-        assert user.bcrypt_password_hash.startswith("$2")
-        assert user.argon2id_password_hash.startswith("$argon2id$")
 
-"""
+
+def test_register_delete_user_endpoint():
+    username = "test_register_user_1"
+    payload = {
+        "username": username,
+        "email": "delete_me_user@example.com",
+        "password": "DeleteMePassword123",
+    }
+    register_response = client.post("/register", json=payload)
+    assert register_response.status_code == 201
+    delete_response = client.delete(f"/users/{username}")
+    assert delete_response.status_code == 200
+    assert delete_response.json() == {"detail": "User deleted successfully"}
+    session_gen = ctx.db_manager.get_session()
+    session = next(session_gen)
+    user = session.exec(select(User).where(User.username == username)).first()
+    assert user is None
