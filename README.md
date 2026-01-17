@@ -4,10 +4,10 @@ A FastAPI-based authentication service that demonstrates common hardening techni
 
 ## Features
 
-- **Multiple hashing strategies:** Select SHA-256, bcrypt, or Argon2id at runtime.
-- **Defense in depth:** Rate limiting, user lockout, CAPTCHA enforcement, TOTP verification, and optional password peppering are all configurable.
-- **Audit-friendly logging:** Every login attempt is recorded to `attempts.log` with timing, protection flags, and outcomes. 【loggers/attempts_logger.py†L1-L36】
-- **SQLite-backed user store:** SQLModel models backed by a local SQLite database created automatically on startup. 【db_manager.py†L10-L38】
+- **Multiple hashing strategies:** Select SHA-256, bcrypt, or Argon2id at runtime; both peppered and non-peppered hashes are stored so you can toggle the setting without re-registering users. 【models/orm/users.py†L1-L48】
+- **Defense in depth:** Login requests pass through rate limiting, user lockout checks, CAPTCHA enforcement, optional peppering, and (when enabled) a follow-up TOTP step. 【api_gateway.py†L11-L37】【main.py†L35-L110】
+- **Audit-friendly logging:** Every login attempt is recorded to `attempts.log` with timing, protection flags, and outcomes. 【loggers/attempts_logger.py†L1-L38】
+- **SQLite-backed user store:** SQLModel models backed by a local SQLite database created automatically on startup. The database lives at `data.db` beside `db_manager.py`. 【db_manager.py†L7-L40】
 
 ## Project layout
 
@@ -18,6 +18,12 @@ A FastAPI-based authentication service that demonstrates common hardening techni
 - `hashing/` – Hashing implementations and selector for the active algorithm.
 - `loggers/` – Base logger configuration plus authentication-attempt logging.
 - `attempts/` – Sample log outputs for attack simulations.
+- `attempted_passwords/` – Wordlists used by the attack scripts.
+
+**Storage paths**
+
+- SQLite database: `data.db` in the repository root (created automatically).
+- Login attempt log: `attempts.log` in the repository root.
 
 ## Getting started
 
@@ -71,7 +77,7 @@ EOF
 uvicorn main:app --reload
 ```
 
-SQLite data is stored in `data.db` at the repository rooty
+SQLite data is stored in `data.db` at the repository root.
 
 ## API overview
 
@@ -82,6 +88,7 @@ SQLite data is stored in `data.db` at the repository rooty
 | `POST /login` | Password verification | Honors the active hash mode, rate limiting, lockout, CAPTCHA, and pepper. On success with TOTP enabled, returns a prompt to supply a code.
 | `POST /login_totp` | TOTP verification | Confirms a TOTP code for a user and updates the last verification timestamp. 【main.py†L115-L133】 |
 | `GET /admin/get_captcha_token` | Issue a CAPTCHA token | Requires a matching `group_seed` query parameter. Pass the returned token via `X-CAPTCHA-TOKEN` header on `/login`.
+| `DELETE /users/{username}` | Remove a user | Useful for cleaning up seeded accounts between runs. |
 
 Example login call with a CAPTCHA token:
 
@@ -97,12 +104,33 @@ curl -X POST http://localhost:8000/login \
 - **Rate limiting:** Caps login attempts per user within a sliding window to deter brute force.
 - **User lockout:** Permanently locks accounts after repeated failures.
 - **CAPTCHA escalation:** Issues one-time tokens after excessive failures; invalid or missing tokens raise `403`.
-- **TOTP second factor:** Generates secrets per user and validates codes while preventing reuse in the same time step.
-- **Peppering:** Optionally appends a server-side secret to passwords before hashing.
+- **TOTP second factor:** Generates per-user secrets and validates codes while preventing reuse in the same time window. When enabled, `/login` returns a prompt and `/login_totp` must be called to finish authentication.
+- **Peppering:** Optionally appends a server-side secret to passwords before hashing; both peppered and plain hashes are stored to allow flipping the toggle without re-registering users.
+
+### Login flow
+
+1. `/login` runs rate limit, lockout, and CAPTCHA checks before verifying the password with the selected hash mode and pepper setting.
+2. If TOTP is enabled, `/login` responds with `"Credentials are valid but totp code is required"`; call `/login_totp` with `username` and `totp_code` to complete authentication.
+3. On success, rate-limit, lockout, and CAPTCHA counters are reset for that user.
 
 ## Seeding users for local testing
 
-The API does not ship with preloaded users. To mirror the sample login tests, register a user such as `weak_password_user_1` with password `123456` before hitting `/login` or `/login_totp`. The TOTP secret returned by `/register` (or stored in the database) can be used to generate codes via `TOTPManager.generate_current_code`.
+The API does not ship with preloaded users. To mirror the sample login tests, register a user such as `weak_password_user_1` with password `123456` before hitting `/login` or `/login_totp`.
+
+TOTP secrets are stored in the database but not returned by `/register`. To fetch a secret and generate a code for manual testing, run:
+
+```bash
+python - <<'PY'
+from context import ctx
+from models.orm.users import User
+from sqlmodel import select
+
+with ctx.db_manager.get_session() as session:
+    user = session.exec(select(User).where(User.username == "weak_password_user_1")).first()
+    print("secret:", user.totp_secret)
+    print("current code:", ctx.totp_manager.generate_code(user.totp_secret))
+PY
+```
 
 ## Logging
 
